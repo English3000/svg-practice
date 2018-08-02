@@ -1,7 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Board from './App';
-import registerServiceWorker from './registerServiceWorker';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Display from './App'
+import registerServiceWorker from './registerServiceWorker'
+import socket from "./socket"
 
-ReactDOM.render(<Board/>, document.getElementById('root'));
-registerServiceWorker();
+ReactDOM.render(<Display/>, document.getElementById('root'))
+registerServiceWorker()

@@ -1,5 +1,5 @@
 import React from "react";
-import { AppRegistry, View, Text } from "react-native";
+import { View, Text } from "react-native";
 
 export default class ErrorBoundary extends React.Component {
   constructor() {
@@ -14,5 +14,3 @@ export default class ErrorBoundary extends React.Component {
     return error ? <View><Text>{error.toString()}</Text></View> : this.props.children;
   }
 }
-
-AppRegistry.registerComponent("ErrorBoundary", () => ErrorBoundary);
