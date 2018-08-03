@@ -1,9 +1,9 @@
 import React from "react"
-import { StyleSheet, View, Dimensions, Platform } from "react-native"
+import { View, Text, Platform } from "react-native"
 import ErrorBoundary from "./components/ErrorBoundary"
-// import Game as Page from "./pages"
-// import Game as Screen from "./screens"
-import { new_channel, join, new_game, add_player } from "./socket"
+// import Page from "./pages"
+// import Screen from "./screens"
+import socket, { join_game } from "./socket"
 // determines how to display
 export default class Display extends React.Component {
   // constructor(){
@@ -11,14 +11,14 @@ export default class Display extends React.Component {
   // }
 
   render(){
-    const channel = new_channel("player1", "name")
-    join(channel)
-    new_game(channel)
-    console.log(add_player(channel, "p2"));
+    console.log( join_game(socket, "test game", "p1") )
     return (
-      <ErrorBoundary>{
+      <ErrorBoundary>
+        <Text>{
+          Platform.OS === "web" ? "web" : "screen"
         // Platform.OS === "web" ? <Page/> : <Screen/>
-      }</ErrorBoundary>
+        }</Text>
+      </ErrorBoundary>
     )
   }
 }

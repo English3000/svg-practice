@@ -10,22 +10,13 @@ let socket = new Socket("ws://localhost:4000/socket", {})
 socket.connect()
 export default socket
 
-export const new_channel = (player, screen_name) =>
-  socket.channel("game:" + player, {screen_name})
-// CHANNEL
-/* {                  topic           params (often for auth)
-  topic: "",
-  params: {},
-  state: "closed"
-} */
-// let game_channel = new_channel("planets", "moon") // change for new game (rather than a restored one)
 // game_channel.on("subscribers", response => {console.log("Current players online:", response)})
   // To see, in browser console, copy, paste, then type: game_channel.push("show_subscribers")
 
-export const join = (channel) =>
-  channel.join()
-         .receive("ok",    response => {console.log("Joined channel!",         response)})
-         .receive("error", response => {console.log("Failed to join channel.", response)})
+export const join_game = (socket, game, player) =>
+  socket.channel("game:" + game, {screen_name: player}).join()
+        .receive("ok",    response => {console.log("Joined channel!", response); return response})
+        .receive("error", response => {console.log(response.reason)})
 /* {
   event: "phx_join",
   channel: Channel,
@@ -34,20 +25,22 @@ export const join = (channel) =>
 // join(game_channel)
 
 // Create a channel event function for each handle_in/3 clause in the GameChannel.
-export const new_game = (channel) =>
-  channel.push("new_game")
+// DEPRECATED: join now handles functionality
+/* export const new_game = (channel) =>
+  channel.push("new_game", channel.params.screen_name)
          .receive("ok",    response => {console.log("New game started!",         response)})
-         .receive("error", response => {console.log("Failed to start new game.", response)})
+         .receive("error", response => {console.log("Failed to start new game.", response)}) */
 /* {
   event: "new_game",
   channel: Channel,
   payload: {}
 } */
 
-export const add_player = (channel, player) =>
+// DEPRECATED: join now handles functionality
+// export const add_player = (channel, player) =>
 // channel        event      payload
-  channel.push("add_player", player)
-         .receive("error", response => {console.log(`Could not add new player: ${player}`, response)})
+  // channel.push("add_player", player)
+  //        .receive("error", response => {console.log(`Could not add new player: ${player}`, response)})
 /* {
   event: "add_player",
   channel: Channel,
@@ -77,3 +70,10 @@ export const exit = (channel) =>
   channel.exit()
          .receive("ok",    response => {console.log("Exited channel",         response)})
          .receive("error", response => {console.log("Failed to exit channel", response)})
+
+// .on not working... valid method, though
+// export const handle = (channel) =>
+//   channel.on("player_added", response => {console.log("Player added", response)})
+//          .on("islands_set", response => {console.log("Player has set all islands", response)})
+//          .on("guessed_coordinate", response => {console.log("Player made guess:", response.result)})
+//          .on("subscribers", response => {console.log("Current players online:", response)})
