@@ -1,24 +1,15 @@
 import React from "react"
-import { View, Text, Platform } from "react-native"
-import ErrorBoundary from "./components/ErrorBoundary"
-// import Page from "./pages"
-// import Screen from "./screens"
-import socket, { join_game } from "./socket"
+import { Platform } from "react-native"
+import ErrorBoundary from "./components/ErrorBoundary.js"
+import Instructions from "./components/Instructions.js"
+import PlayWeb from "./pages/Play.js"
+import PlayMobile from "./screens/Play.js"
 
-export default class Display extends React.Component{
-  // constructor(){
-  //   this.state = {stage: /* from channel */}
-  // }
-
-  render(){
-    console.log(join_game(socket, "G-0", "p3"))
-    return (
-      <ErrorBoundary>
-        <Text>{
-          Platform.OS === "web" ? "web" : "screen"
-        // Platform.OS === "web" ? <Page/> : <Screen/>
-        }</Text>
-      </ErrorBoundary>
-    )
-  }
-}
+export default () => (
+  <ErrorBoundary>
+    <Instructions/>
+    {Platform.OS === "web" ?
+      <PlayWeb/> :
+      <PlayMobile/>}
+  </ErrorBoundary>
+)

@@ -1,8 +1,7 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Display from './App'
-import registerServiceWorker from './registerServiceWorker'
-import socket from "./socket"
+import React from "react"
+import ReactDOM from "react-dom"
+import Game from "./App.js"
+import registerServiceWorker from "./registerServiceWorker.js"
 
-ReactDOM.render(<Display/>, document.getElementById('root'))
+ReactDOM.render(<Game/>, document.getElementById("root"))
 registerServiceWorker()

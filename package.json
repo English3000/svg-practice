@@ -32,6 +32,7 @@
   "dependencies": {
     "expo": "^27.0.1",
     "expo-web": "^0.0.12",
+    "history": "^4.7.2",
     "phoenix-socket": "^1.2.3",
     "react": "^16.0.0",
     "react-dom": "16.0.0",
