@@ -34,6 +34,7 @@
     "expo-web": "^0.0.12",
     "history": "^4.7.2",
     "phoenix-socket": "^1.2.3",
+    "query-string": "^6.1.0",
     "react": "^16.0.0",
     "react-dom": "16.0.0",
     "react-native": "~0.55.2",

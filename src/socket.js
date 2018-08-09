@@ -1,4 +1,7 @@
 import {Socket} from "phoenix-socket" // https://hexdocs.pm/phoenix/js/
+import createHistory from "history/createBrowserHistory"
+
+export const history = createHistory()
 
 let socket = new Socket("ws://localhost:4000/socket", {})
 socket.connect()

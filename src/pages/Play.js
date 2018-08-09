@@ -1,5 +1,5 @@
 // need to consider crash handling...
-componentWillMount(){
+constructor(){
   if (socket.channels.length > 0)
     socket.channels[0].on("game_joined", ({game, rules, player1, player2}) => this.setState({game, rules, player1, player2}))
 }
