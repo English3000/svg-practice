@@ -1,5 +1,6 @@
 import React from "react"
 import { Platform, View, TextInput, Button, Text } from "react-native"
+import styles from "./index.js"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
 // import WebGameplay from "./pages/Gameplay.js"
@@ -17,12 +18,12 @@ export default class Game extends React.Component{
   }
 
   render(){
-    const { form, message, payload } = this.state
+    const { form, message, payload, ids } = this.state
     return ( // * add onEnter functionality if form.complete *
       <ErrorBoundary>
         <View key="dimensions">
           {form ? [
-            <View key="inputs">
+            <View key="inputs" style={styles.row}>
               <TextInput onChange={this.handleInput}
                          name="game"
                          placeholder="game"
@@ -46,8 +47,8 @@ export default class Game extends React.Component{
             Platform.OS === "web" ?
               <Text>web</Text> :
               <Text>mobile</Text> :
-              //    <WebGameplay game={payload}/> :
-              // <MobileGameplay game={payload}/> :
+              //    <WebGameplay game={payload} player={id}/> :
+              // <MobileGameplay game={payload} player={id}/> :
             null}
         </View>
       </ErrorBoundary>
@@ -78,8 +79,8 @@ export default class Game extends React.Component{
         .receive("ok", payload => {
           history.push(`/?game=${game}&player=${player}`)
           const {player1, player2} = payload
-          if (player1.name === player) this.setState({ form: false, message: {instruction: player1.stage}, payload })
-          if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload })
+          if (player1.name === player) this.setState({ form: false, message: {instruction: player1.stage}, payload, id: "player1" })
+          if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
       }).receive("error", response => this.setState({ message: {error: response.reason} }))
   }
   // handle server crashes (browser handles its own) -- refetch game via rejoin via query string

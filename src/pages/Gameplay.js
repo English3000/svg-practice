@@ -1,27 +1,22 @@
+import React from "react"
+import { View } from "react-native"
+import ErrorBoundary from "./components/ErrorBoundary.js"
+import Board from "./components/Board.js"
+import styles from "./index.js"
+// probably will move board logic up here so have access to
+const renderBoards = ({game, player}) => (
+  player === "player1" ? // player1 is always on left
 
-player1.board ?
-  <View>
-    <Board/> {/* incl. Islands */}
-    <Guesses/>
-  </View> :
-  <View>
-    <Guesses/>
-    <Board/>
-  </View>
+    [ <Board key="me"       islands={game[player].islands} stage={game[player].stage}/> ,
+      <Board key="opponent" guesses={game[player].guesses}/> ] :
 
+    [ <Board key="opponent" guesses={game[player].guesses}/> ,
+      <Board key="me"       islands={game[player].islands} stage={game[player].stage}/> ]
+)
 
-<View key="board">
-  {/* DROP AREA: https://dev.to/hyra/getting-started-with-the-panresponder-in-react-native-9mf */}
-</View>
-<View key="islands">
-  {/* this.state = {
-    unset: 5
-  } */}
-  {unset > 0 ?
-    <View>{/* DRAGGABLE ISLANDS */}</View> :
-    <Button key="set-islands"></Button>}
-</View>
-
-<View key="guesses">
-  {/* displays my guesses */}
-</View>
+export default (props) =>
+  <ErrorBoundary>
+    <View key="display" style={styles.row}>
+      {renderBoards(props)}
+    </View>
+  </ErrorBoundary>

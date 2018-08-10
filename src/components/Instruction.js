@@ -1,7 +1,6 @@
 import React from "react"
 import { Text } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
-
 // coupled to IslandsEngine.Game.Stage atoms
 function renderInstruction(instruction){
   switch (instruction) {
@@ -22,10 +21,12 @@ function renderInstruction(instruction){
   }
 }
 
-export default ({message}) => (
+const renderMessage = (message) =>
+  message.error ?
+    <Text>{message.error}</Text> :
+    renderInstruction(message.instruction)
+
+export default ({message}) =>
   <ErrorBoundary>
-    {message.error ?
-      <Text>{message.error}</Text> :
-      renderInstruction(message.instruction)}
+    {renderMessage(message)}
   </ErrorBoundary>
-)
