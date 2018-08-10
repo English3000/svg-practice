@@ -1,23 +1,20 @@
-import {Socket} from "phoenix-socket" // https://hexdocs.pm/phoenix/js/
+import {Socket} from "phoenix-socket"
 import createHistory from "history/createBrowserHistory"
 
-export const history = createHistory()
+export const history = createHistory() //onBack => exit_game(channel)
 
+// in package.json, can add "proxy": "http://localhost:4000/",
 let socket = new Socket("ws://localhost:4000/socket", {})
 socket.connect()
-export default socket // socket.channels[0] => channel
+export default socket
 
-const channel = (socket) =>
-  socket.channel("game:" + game, {screen_name: player})
-  // could have `.on` listener w/in component of choice, which updates its state
-        // .on("game_joined", response => response)
+// export const channel = (socket) =>
+//   socket.channel("game:" + game, {screen_name: player})
 
 export const join_game = (socket, game, player) =>
   socket.channel("game:" + game, {screen_name: player}).join()
-        // should probably define w/in component
-        .receive("error", response => response.reason)
 
-export const get_state = (channel, game, player) =>
+export const get_state = (channel, game, player) => // @
   channel.push("get_state", {game, player})
          .receive("error", response => response.reason)
 
