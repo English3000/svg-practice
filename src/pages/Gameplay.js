@@ -1,8 +1,3 @@
-// need to consider crash handling...
-componentDidMount(){ // won't have access to a channel until game is joined
-  if (socket.channels.length > 0)
-    socket.channels[0].on("game_joined", ({game, rules, player1, player2}) => this.setState({game, rules, player1, player2}))
-}
 
 player1.board ?
   <View>
