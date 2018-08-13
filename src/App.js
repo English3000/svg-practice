@@ -1,10 +1,9 @@
 import React from "react"
-import { Platform, View, TextInput, Button, Text } from "react-native"
+import { View, TextInput, Button } from "react-native"
 import styles from "./index.js"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
-// import WebGameplay from "./pages/Gameplay.js"
-// import MobileGameplay from "./screens/Gameplay.js"
+import Gameplay from "./components/Gameplay.js"
 import socket, { history, join_game } from "./socket.js"
 import queryString from "query-string"
 
@@ -44,12 +43,7 @@ export default class Game extends React.Component{
             <Instruction message={message}/> : null}
 
           {payload ?
-            Platform.OS === "web" ?
-              <Text>web</Text> :
-              <Text>mobile</Text> :
-              //    <WebGameplay game={payload} player={id}/> :
-              // <MobileGameplay game={payload} player={id}/> :
-            null}
+            <Gameplay game={payload} player={id}/> : null}
         </View>
       </ErrorBoundary>
     )

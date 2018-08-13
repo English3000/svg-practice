@@ -1,33 +1,14 @@
 import React from "react"
 import { PanResponder, Animated } from "react-native"
-import ErrorBoundary from "./components/ErrorBoundary.js"
-
-// I need a board that I can place islands in onDrop
-// I need draggable islands that can be moved onto && around the board
-
-// Option 1
-//   Display an SVG board
-//   Make islands SVGs wrapped by Animated.View
-//   When set islands, convert islands to non-movable SVGs,
-//     calculating row & col based on where it falls on board (can use division && rounding)
-
-// The issues w/ this approach are
-//  (1) the backend has a place_island API
-//  (2) which houses collision logic (not set_islands)
-
-// The accordingly solution would be
-//  to remove island-placing logic from the backend, and
-//  to replace it with island-setting validations.
-
-// PROS && CONS
-// + reduces number of channel events && validations
-// ? more appropriate separation of concerns
-// - on crash, if islands unset, need to reset all
+import ErrorBoundary from "./ErrorBoundary.js"
+import Shape from "./Shape.js"
+import socket, { place_island } from "../socket.js"
 
 // Option 2
 //   Display an SVG board
 //   Make islands SVGs wrapped by Animated.View
 //   onPanResponderRelease, send channel event to place or spring island
+//     > calculate coordinates from pan.x && pan.y
 //   When set islands, re-render IslandSet as non-movable SVGs
 
 // + persistent on crash/exit
@@ -45,14 +26,22 @@ export default class Island extends React.Component{
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([ null, { dx: this.state.pan.x,
                                                    dy: this.state.pan.y } ])
+      onPanResponderRelease: () =>
+        place_island(socket.channels[0], props.turn, props.type, locate(this.state.pan.x), locate(this.state.pan.y))
+          .receive("error", Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}).start) // https://facebook.github.io/react-native/docs/animated#spring
     })
+  }
+  locate(coord){
+    // round value so island lands squarely on tile && is placed on the backend accordingly
   }
 
   render(){
     return (
-      <Animated.View>
-        {/* island */}
-      </Animated.View>
+      <ErrorBoundary>
+        <Animated.View>
+          {island(props.coords)}
+        </Animated.View>
+      </ErrorBoundary>
     )
   }
 }
