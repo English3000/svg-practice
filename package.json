@@ -33,6 +33,7 @@
     "expo": "^27.0.1",
     "expo-web": "^0.0.12",
     "history": "^4.7.2",
+    "lodash.merge": "^4.6.1",
     "phoenix-socket": "^1.2.3",
     "query-string": "^6.1.0",
     "react": "^16.0.0",

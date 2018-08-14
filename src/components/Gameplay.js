@@ -26,23 +26,22 @@ export default class Gameplay extends React.Component{
     const opp = (player === "player1") ? game["player2"] : game["player1"]
     const my = game[player]
     if (Platform.OS !== "web") {
-      return my.stage === "turn" ?
+      return my.stage === "turn" ? // handle game end; need island hits
                <Board guesses={my.guesses}
-                        stage={my.stage}
-                       player={player}/> :
+                      player={player}
+                      attackable={my.stage === "turn"}/> :
 
              [ <Board guesses={opp.guesses}
                       islands={my.islands}
-                        stage={my.stage}
-                       player={opp.key}
-                          key="islands-set"/> ,
+                      attackable={false}
+                      key="islands-set"/> ,
 
                my.stage === "joined" ? // IslandSet; on bottom, absolute
                  <View style={styles.row}>
                    {_.map(this.state.unset, type => <Island coords={coords[type]}/>)}
                  </View>
                : null ]
-    } else if (player === "player1") { // player1 is always on left
+    } else if (player === "player1") { // web: player1 is always on left
       const turn = my.stage === "turn" ? player :
                      my.stage === "wait" ? "player2" :
                        null
@@ -56,26 +55,24 @@ export default class Gameplay extends React.Component{
 
                  <Board guesses={opp.guesses}
                         islands={my.islands}
-                        stage={my.stage}
-                        player={player}/>
+                        attackable={false}/>
                </View> ,
 
                <Board guesses={my.guesses}
-                      player={opp.key}
+                      attackable={my.stage === "turn"}
                       key="opp"/> ]
     } else {
       const turn = my.stage === "turn" ? player :
                      my.stage === "wait" ? "player1" : null
 
       return [ <Board guesses={my.guesses}
-                      turn={turn}
+                      attackable={my.stage === "turn"}
                       key="opp"/> ,
 
                <View key="me">
                  <Board guesses={opp.guesses}
                         islands={my.islands}
-                        stage={my.stage}
-                        turn={turn}/>
+                        attackable={false}/>
 
                  {my.stage === "joined" ? // IslandSet; on right, absolute
                    <View>

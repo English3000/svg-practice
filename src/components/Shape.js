@@ -33,17 +33,25 @@ export const coords = { // add bounds/dimensions
            [1,0],[1,1]]
 }
 
-export const islands(islands, stage, player) => // * make more efficient *
-               _.map(islands, island => island(island.coordinates))
-               _.map(islands, island => island(island.hits, true))
+export const guesses = (hits) =>
+               _.map(hits, hit => tile(hit, true))
 
-export const island = (coords, hit = false, row = 0, col = 0) =>
-               _.map(coords, coord =>
-                 <Tile key={`board(${row+coord[0]},${col+coord[1]})`}
-                       x={unit(col + coord[1])}
-                       y={unit(row + coord[0])}
-                       fill={hit ? "green" : "brown"}/>)
+export const islands(islands, attackable, player) =>
+               _.map(islands, island =>
+                 _.map(island.coordinates, coord => tile(coord, false, attackable, player)))
 
+export const island = (coords, hit = false, attackable = false, player = null, row = 0, col = 0) =>
+               _.map(coords, )
+
+export const renderTiles = (coords, hit, attackable, player = null) =>
+               _.map(coords, coord => tile(coord, hit, attackable, player))
+
+const tile = (coord) =>
+  <Tile key={`board(${row+coord[0]},${col+coord[1]})`}
+        x={unit(col + coord[1])}
+        y={unit(row + coord[0])}
+        fill={hit ? "green" : "brown"}
+        onPress={() => a}/>
 
 export const board = (size) =>
                _.map(_.range(size), x =>
