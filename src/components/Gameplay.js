@@ -3,11 +3,11 @@ import { Platform, View } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
 import Island from "./Island.js"
-import { coords } from "./Shape.js"
-import styles from "./index.js"
+import { islands } from "./Tile.js"
+import styles from "../index.js"
 import _ from "underscore"
 
-export const ISLAND_TYPES = ["atoll", "dot", "l", "s", "square"]
+export const ISLAND_TYPES = ["atoll", "dot", "L", "S", "square"]
 
 export default class Gameplay extends React.Component{
   constructor(props) {
@@ -36,9 +36,9 @@ export default class Gameplay extends React.Component{
                       attackable={false}
                       key="islands-set"/> ,
 
-               my.stage === "joined" ? // IslandSet; on bottom, absolute
-                 <View style={styles.row}>
-                   {_.map(this.state.unset, type => <Island coords={coords[type]}/>)}
+               my.stage === "joined" ? // IslandSet; on bottom, absolute -- CAN an object be destructured?
+                 <View key="unset-islands" style={styles.row}>
+                   {_.map(this.state.unset, type => <Island key={type} {...islands[type]}/>)}
                  </View>
                : null ]
     } else if (player === "player1") { // web: player1 is always on left
@@ -46,10 +46,10 @@ export default class Gameplay extends React.Component{
                      my.stage === "wait" ? "player2" :
                        null
 
-      return [ <View key="me">
+      return [ <View key="me" style={styles.row}>
                  {my.stage === "joined" ? // IslandSet; on left, absolute
                    <View>
-                     {_.map(this.state.unset, type => <Island coords={coords[type]}/>)}
+                     {_.map(this.state.unset, type => <Island key={type} {...islands[type]}/>)}
                    </View>
                  : null}
 
@@ -69,14 +69,14 @@ export default class Gameplay extends React.Component{
                       attackable={my.stage === "turn"}
                       key="opp"/> ,
 
-               <View key="me">
+               <View key="me" style={styles.row}>
                  <Board guesses={opp.guesses}
                         islands={my.islands}
                         attackable={false}/>
 
                  {my.stage === "joined" ? // IslandSet; on right, absolute
                    <View>
-                     {_.map(this.state.unset, type => <Island coords={coords[type]}/>)}
+                     {_.map(this.state.unset, type => <Island key={type} {...islands[type]}/>)}
                    </View>
                  : null}
                </View> ]

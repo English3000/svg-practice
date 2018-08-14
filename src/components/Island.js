@@ -1,7 +1,8 @@
 import React from "react"
 import { PanResponder, Animated } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
-import Shape from "./Shape.js"
+import Svg from "react-native-svg"
+import { renderTiles } from "./Tile.js"
 import socket, { place_island, delete_island } from "../socket.js"
 
 export default class Island extends React.Component{
@@ -14,7 +15,7 @@ export default class Island extends React.Component{
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([ null, { dx: this.state.pan.x,
-                                                   dy: this.state.pan.y } ])
+                                                   dy: this.state.pan.y } ]),
       onPanResponderRelease: () => {
         const [row, col] = [locate(this.state.pan.x), locate(this.state.pan.y)]
         if (row /* condition */ && col /* condition */) {
@@ -33,10 +34,12 @@ export default class Island extends React.Component{
   }
 
   render(){
-    return ( // add margins
+    return ( // can't move islands; key error??
       <ErrorBoundary>
-        <Animated.View>
-          {island(props.coords)}
+        <Animated.View style={{margin: 5}}>
+          <Svg width={this.props.bounds.width} height={this.props.bounds.height}>
+            {renderTiles(this.props.coords, "brown")}
+          </Svg>
         </Animated.View>
       </ErrorBoundary>
     )

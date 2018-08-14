@@ -7,8 +7,8 @@ let socket = new Socket("ws://localhost:4000/socket", {})
 socket.connect()
 export default socket
 
-export const join_game = (socket, game, player) =>
-  socket.channel("game:" + game, {screen_name: player}).join()
+export const channel = (socket, game, player) =>
+  socket.channel("game:" + game, {screen_name: player})
 
 // export const get_state = (channel, game, player) =>
 //   channel.push("get_state", {game, player})

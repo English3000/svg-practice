@@ -4,7 +4,7 @@ import styles from "./index.js"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
 import Gameplay from "./components/Gameplay.js"
-import socket, { history, join_game } from "./socket.js"
+import socket, { history, channel } from "./socket.js"
 import queryString from "query-string"
 import merge from "lodash.merge"
 
@@ -18,7 +18,7 @@ export default class Game extends React.Component{
   }
 
   render(){
-    const { form, message, payload, ids } = this.state
+    const { form, message, payload, id } = this.state
     return (
       <ErrorBoundary>
         <View key="dimensions">
@@ -72,14 +72,14 @@ export default class Game extends React.Component{
   }
   joinGame(params){
     const {game, player} = params
-    if (game.length > 0 && player.length > 0)
-      join_game(socket, game, player) // validate all handlers
-        .on( "error",                error => this.setState({error}) )
-        .on( "game_joined",        payload => this.setState({payload}) )
-        .on( "island_placed",       island => this.setState({payload: this.updatePayload("island_placed", island)}) )
-        .on( "island_removed",         key => this.setState({payload: this.updatePayload("island_removed", key)}) )
-        .on( "islands_set",    stageAndKey => this.setState({payload: this.updatePayload("islands_set", stageAndKey)}) )
-        .on( "coordinate_guessed", results => this.setState({payload: this.updatePayload("coordinate_guessed", results)}) )
+    if (game.length > 0 && player.length > 0) {
+      let gameChannel = channel(socket, game, player) // validate all handlers
+      gameChannel.on( "error",                error => this.setState({error}) )
+      gameChannel.on( "island_placed",       island => this.setState({payload: this.updatePayload("island_placed", island)}) )
+      gameChannel.on( "island_removed",         key => this.setState({payload: this.updatePayload("island_removed", key)}) )
+      gameChannel.on( "islands_set",    stageAndKey => this.setState({payload: this.updatePayload("islands_set", stageAndKey)}) )
+      gameChannel.on( "coordinate_guessed", results => this.setState({payload: this.updatePayload("coordinate_guessed", results)}) )
+      gameChannel.join()
         .receive("ok", payload => {
           history.push(`/?game=${game}&player=${player}`)
           const {player1, player2} = payload
@@ -87,6 +87,8 @@ export default class Game extends React.Component{
           if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
       // `join_game` has own error-handling b/c can't add event listeners until AFTER joined channel
       }).receive("error", response => this.setState({ message: {error: response.reason} }))
+      gameChannel.on( "game_joined",        payload => this.setState({payload}) )
+    }
   } // When done, can write blog post about my channel-based architecture. (submit this to Elixir Radar)
 
   /* TRADEOFF: This reducer, `updatePayload`, is coupled to the backend.
@@ -103,6 +105,9 @@ export default class Game extends React.Component{
        + no additional complexity on backend
        + easier to debug (can still debug within reducer)
        (+ backend eliminates database latency)
+
+      CONS:
+       - full app re-renders on event >> VALIDATE, then explore minimal Redux solution...
 
       NEUTRAL:
        > props are passed down the component hierarchy -- Relay requires this too
