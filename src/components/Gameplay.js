@@ -38,18 +38,20 @@ export default class Gameplay extends React.Component{
 
                my.stage === "joined" ? // IslandSet; on bottom, absolute -- CAN an object be destructured?
                  <View key="unset-islands" style={styles.row}>
-                   {_.map(this.state.unset, type => <Island key={type} {...islands[type]}/>)}
+                   {_.map(this.state.unset, type => <Island key={type}
+                                                            type={type}
+                                                            player={player}
+                                                            {...islands[type]}/>)}
                  </View>
                : null ]
     } else if (player === "player1") { // web: player1 is always on left
-      const turn = my.stage === "turn" ? player :
-                     my.stage === "wait" ? "player2" :
-                       null
-
       return [ <View key="me" style={styles.row}>
                  {my.stage === "joined" ? // IslandSet; on left, absolute
                    <View>
-                     {_.map(this.state.unset, type => <Island key={type} {...islands[type]}/>)}
+                     {_.map(this.state.unset, type => <Island key={type}
+                                                              type={type}
+                                                              player={player}
+                                                              {...islands[type]}/>)}
                    </View>
                  : null}
 
@@ -60,13 +62,12 @@ export default class Gameplay extends React.Component{
 
                <Board guesses={my.guesses}
                       attackable={my.stage === "turn"}
+                      player={player}
                       key="opp"/> ]
     } else {
-      const turn = my.stage === "turn" ? player :
-                     my.stage === "wait" ? "player1" : null
-
       return [ <Board guesses={my.guesses}
                       attackable={my.stage === "turn"}
+                      player={player}
                       key="opp"/> ,
 
                <View key="me" style={styles.row}>
@@ -76,7 +77,10 @@ export default class Gameplay extends React.Component{
 
                  {my.stage === "joined" ? // IslandSet; on right, absolute
                    <View>
-                     {_.map(this.state.unset, type => <Island key={type} {...islands[type]}/>)}
+                     {_.map(this.state.unset, type => <Island key={type}
+                                                              type={type}
+                                                              player={player}
+                                                              {...islands[type]}/>)}
                    </View>
                  : null}
                </View> ]

@@ -32,25 +32,23 @@ export const islands = {
             bounds: {width: unit(2), height: unit(2)} }
 }
 
-export const renderTiles = (coords, fill, attackable = false, player = null) =>
-               _.map(coords, coord => tile(coord, fill, attackable, player))
+export const renderTiles = (coords, fill) =>
+               _.map(coords, coord => tile(coord, fill))
 
-const tile = (coords, fill, attackable, player) =>
+const tile = (coords, fill) =>
   <ErrorBoundary>
     <Tile key={`tile(${coords[1]},${coords[0]})`}
           x={unit(coords[1])}
           y={unit(coords[0])}
-          fill={fill}
-          onPress={() => attackable ? guess_coordinate(socket.channels[0], player, coord.row, coord.col) : null }/>
+          fill={fill}/>
   </ErrorBoundary>
 
-export const board = (size) =>
+export const board = (size, player) =>
                _.map(_.range(size), x =>
                  _.map(_.range(size), y =>
-                   <Tile key={`board(${x},${y})`}
-                         x={unit(x)}
-                         y={unit(y)}
-                         fill="blue"/>))
+                   <Tile key={`board(${x},${y})`} fill="blue"
+                         x={unit(x)}              y={unit(y)}
+                         onPress={() => player ? guess_coordinate(socket.channels[0], player, x, y) : null }/>))
 
 const Tile = ({x, y, fill, onPress}) =>
   <Rect x={`${x}`}  width={`${unit(1)}`}  data-row={`${x}`}
