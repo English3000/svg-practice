@@ -21,12 +21,9 @@ function renderInstruction(instruction){
   }
 }
 
-const renderMessage = (message) =>
-  message.error ?
-    <Text>{message.error}</Text> :
-    renderInstruction(message.instruction)
-
 export default ({message}) =>
   <ErrorBoundary>
-    {renderMessage(message)}
+    { message.error ?
+       <Text>{message.error}</Text> :
+       renderInstruction(message.instruction) }
   </ErrorBoundary>

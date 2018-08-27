@@ -1,55 +1,67 @@
-import React from "react"
-import { View, TextInput, Button } from "react-native"
-import styles from "./index.js"
+import React, { Component, createContext } from "react"
+import { StyleSheet, View, TextInput, Button } from "react-native"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
 import Gameplay from "./components/Gameplay.js"
 import socket, { history, channel } from "./socket.js"
 import queryString from "query-string"
 import merge from "lodash.merge"
+// import Loadable from "react-loadable"                                        comment prepends value to webpack IO
+// const Gameplay = Loadable({ loader: () => import("./components/Gameplay.js" /* webpackChunkName: "Gameplay" */),
+//                             loading: Loading })
+// Loading == util component like ErrorBoundary
+export const styles = StyleSheet.create({
+  row: {flexDirection: "row"}
+})
 
-export default class Game extends React.Component{
+export const { Provider, Consumer } = createContext()
+
+export default class Game extends Component{
   constructor(){
     super()
+    this.handleInput = this.handleInput.bind(this)
     this.state = history.location.search.length > 1 ?
                   { form: false } :
                   { form: {game: "", player: "", complete: false} }
-    this.handleInput = this.handleInput.bind(this)
   }
 
   render(){
     const { form, message, payload, id } = this.state
     return (
       <ErrorBoundary>
-        <View key="dimensions">
-          {form ? [
-            <View key="inputs" style={styles.row}>
-              <TextInput onChange={this.handleInput}
-                         name="game"
-                         placeholder="game"
-                         value={form.game}
-                         onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
-                                               this.joinGame(form) : null}/>
-              <TextInput onChange={this.handleInput}
-                         name="player"
-                         placeholder="player"
-                         value={form.player}
-                         onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
-                                               this.joinGame(form) : null}/>
-            </View>,
+        {form ? [
+          <View key="inputs" style={styles.row}>
+            <TextInput onChange={this.handleInput}
+                       name="game"
+                       placeholder="game"
+                       value={form.game}
+                       onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
+                                             this.joinGame(form) : null}/>
+            <TextInput onChange={this.handleInput}
+                       name="player"
+                       placeholder="player"
+                       value={form.player}
+                       onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
+                                             this.joinGame(form) : null}/>
+          </View>,
 
-            form.complete ?
-              <Button onPress={() => this.joinGame(form)}
-                      title="JOIN"
-                      key="button"/> : null
-          ] : null}
+          form.complete ?
+            <Button onPress={() => this.joinGame(form)}
+                    title="JOIN"
+                    key="button"/> : null
+        ] : null}
 
-          {message ?
-            <Instruction message={message}/> : null}
+        {message ?
+          <Instruction message={message}/> : null}
 
-          {payload ?
-            <Gameplay game={payload} player={id}/> : null}
-        </View>
+        {payload ? // use Consumer so lifecycle methods can access data
+          <Provider value={{ store: {game: payload, player: id},
+                             actions: {} }}>
+            <Consumer>
+              { ({store}) => <Gameplay game={store.game}
+                                       player={store.player}/> }
+            </Consumer>
+          </Provider> : null}
       </ErrorBoundary>
     )
   }
@@ -70,6 +82,7 @@ export default class Game extends React.Component{
 
     this.setState({form})
   }
+  // Move down component hierarchy && add actions as appropriate
   joinGame(params){
     const {game, player} = params
     if (game.length > 0 && player.length > 0) {
@@ -81,10 +94,10 @@ export default class Game extends React.Component{
       gameChannel.on( "coordinate_guessed", results => this.setState({payload: this.updatePayload("coordinate_guessed", results)}) )
       gameChannel.join()
         .receive("ok", payload => {
-          history.push(`/?game=${game}&player=${player}`)
           const {player1, player2} = payload
           if (player1.name === player) this.setState({ form: false, message: {instruction: player1.stage}, payload, id: "player1" })
           if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
+          history.push(`/?game=${game}&player=${player}`)
       // `join_game` has own error-handling b/c can't add event listeners until AFTER joined channel
       }).receive("error", response => this.setState({ message: {error: response.reason} }))
       gameChannel.on( "game_joined",        payload => this.setState({payload}) )

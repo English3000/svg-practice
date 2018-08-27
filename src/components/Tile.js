@@ -32,25 +32,29 @@ export const islands = {
             bounds: {width: unit(2), height: unit(2)} }
 }
 
-export const renderTiles = (coords, fill) =>
-               _.map(coords, coord => tile(coord, fill))
+export const renderTiles = (coords, key, fill) =>
+               _.map(coords, coord => tile(coord, key, fill))
 
-const tile = (coords, fill) =>
-  <ErrorBoundary>
-    <Tile key={`tile(${coords[1]},${coords[0]})`}
-          x={unit(coords[1])}
-          y={unit(coords[0])}
-          fill={fill}/>
-  </ErrorBoundary>
+const tile = (coords, key, fill) =>
+  <Tile key={`${key}(${coords[1]},${coords[0]})`}
+        x={unit(coords[1])}
+        y={unit(coords[0])}
+        fill={fill}/>
 
-export const board = (size, player) =>
+// REFACTOR: Svgs have no `onPress`, so render as Buttons
+// Can use similar drag+drop logic to game.jsx
+
+// What's the most efficient way to not render board tiles that have been attacked?
+//  (0) Render hits && misses
+//  (1) For each board tile, check if already rendered (using map)
+export const board = (size, player) => // hits, misses
                _.map(_.range(size), x =>
                  _.map(_.range(size), y =>
                    <Tile key={`board(${x},${y})`} fill="blue"
                          x={unit(x)}              y={unit(y)}
                          onPress={() => player ? guess_coordinate(socket.channels[0], player, x, y) : null }/>))
 
-const Tile = ({x, y, fill, onPress}) =>
+const Tile = ({x, y, fill}) =>
   <Rect x={`${x}`}  width={`${unit(1)}`}  data-row={`${x}`}
         y={`${y}`}  height={`${unit(1)}`} data-col={`${y}`}
-        fill={fill} stroke="black"        onPress={onPress}/> //no onPress
+        fill={fill} stroke="black"/> //no onPress

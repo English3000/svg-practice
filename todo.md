@@ -1,5 +1,10 @@
 # TODO (work from top, down)
 
+BUGS:
+* `App.js`: onEnter
+* `Island.js`: `PanResponder` onPanResponderRelease
+* `server.ex`: `GenServer.call` via tuple
+
 ### `socket.js`
 ### `index.js`
 

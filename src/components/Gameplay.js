@@ -4,14 +4,16 @@ import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
 import Island from "./Island.js"
 import { islands } from "./Tile.js"
-import styles from "../index.js"
+import { Consumer, styles } from "../App.js"
 import _ from "underscore"
 
 export const ISLAND_TYPES = ["atoll", "dot", "L", "S", "square"]
-
+// Refactor, using Consumer API 
 export default class Gameplay extends React.Component{
   constructor(props) {
     super(props)
+    this.renderBoards = this.renderBoards.bind(this)
+
     const types = Object.keys(props.game[props.player].islands)
     this.state = { unset: _.reject(ISLAND_TYPES, type => types.includes(type)) }
   }
@@ -22,6 +24,7 @@ export default class Gameplay extends React.Component{
                      </View>
                    </ErrorBoundary> }
 
+  // (0) Debug Island.js, referencing past commits
   renderBoards({game, player}){
     const opp = (player === "player1") ? game["player2"] : game["player1"]
     const my = game[player]

@@ -12,7 +12,21 @@ export default class Island extends React.Component{
     this.panResponder = {}
   }
 
+  render(){
+    return ( // can't move islands
+      <ErrorBoundary>
+        <Animated.View style={{transform: this.state.pan.getTranslateTransform(), margin: 5}}
+                       {...this.panResponder.panHandlers}>
+          <Svg width={this.props.bounds.width} height={this.props.bounds.height}>
+            {renderTiles(this.props.coords, this.props.player + this.props.type, "brown")}
+          </Svg>
+        </Animated.View>
+      </ErrorBoundary>
+    )
+  }
+
   componentDidMount(){ // https://facebook.github.io/react-native/docs/gesture-responder-system.html
+    console.log("mounted");
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([ null, { dx: this.state.pan.x,
@@ -30,23 +44,11 @@ export default class Island extends React.Component{
       }
     })
     this.forceUpdate()
+    console.log("updated");
   }
   locate(coord){ // locating depends on styling
     console.log(coord._value)
     return coord._value
     // round value so island lands squarely on tile && is placed on the backend accordingly
-  }
-
-  render(){
-    return ( // can't move islands; key error??
-      <ErrorBoundary>
-        <Animated.View style={{transform: this.state.pan.getTranslateTransform(), margin: 5}}
-                       {...this.panResponder.panHandlers}>
-          <Svg width={this.props.bounds.width} height={this.props.bounds.height}>
-            {renderTiles(this.props.coords, "brown")}
-          </Svg>
-        </Animated.View>
-      </ErrorBoundary>
-    )
   }
 }
