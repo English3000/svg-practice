@@ -26,7 +26,7 @@ export default class Island extends React.Component{
   }
 
   componentDidMount(){ // https://facebook.github.io/react-native/docs/gesture-responder-system.html
-    console.log("mounted");
+    console.log(this.panResponder);
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([ null, { dx: this.state.pan.x,
@@ -43,8 +43,8 @@ export default class Island extends React.Component{
         }
       }
     })
+    console.log(this.panResponder);
     this.forceUpdate()
-    console.log("updated");
   }
   locate(coord){ // locating depends on styling
     console.log(coord._value)

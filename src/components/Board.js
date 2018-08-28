@@ -4,6 +4,16 @@ import ErrorBoundary from "./ErrorBoundary.js"
 import Svg from "react-native-svg"
 import { height, width, board, renderTiles } from "./Tile.js"
 import _ from "underscore"
+/*
+function renderButtons(size, guesses, islands){
+  // if an island is placed, the whole board re-renders
+}
+
+export default (props) =>
+  <ErrorBoundary>
+    {renderButtons(10, props.guesses, props.attackable ? null : props.islands)}
+  </ErrorBoundary>
+*/
 
 const filter = (island, hits) => // Does app render faster?
   _.reject(island, coord => hits.includes(coord))

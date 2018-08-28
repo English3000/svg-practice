@@ -55,6 +55,6 @@ export const board = (size, player) => // hits, misses
                          onPress={() => player ? guess_coordinate(socket.channels[0], player, x, y) : null }/>))
 
 const Tile = ({x, y, fill}) =>
-  <Rect x={`${x}`}  width={`${unit(1)}`}  data-row={`${x}`}
-        y={`${y}`}  height={`${unit(1)}`} data-col={`${y}`}
+  <Rect x={`${x}`}  width={`${unit(1)}`}
+        y={`${y}`}  height={`${unit(1)}`}
         fill={fill} stroke="black"/> //no onPress

@@ -8,7 +8,7 @@ import { Consumer, styles } from "../App.js"
 import _ from "underscore"
 
 export const ISLAND_TYPES = ["atoll", "dot", "L", "S", "square"]
-// Refactor, using Consumer API 
+// Refactor, using Consumer API
 export default class Gameplay extends React.Component{
   constructor(props) {
     super(props)
