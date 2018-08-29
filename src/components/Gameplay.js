@@ -24,7 +24,6 @@ export default class Gameplay extends React.Component{
                      </View>
                    </ErrorBoundary> }
 
-  // (0) Debug Island.js, referencing past commits
   renderBoards({game, player}){
     const opp = (player === "player1") ? game["player2"] : game["player1"]
     const my = game[player]

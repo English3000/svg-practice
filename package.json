@@ -37,7 +37,7 @@
     "phoenix-socket": "^1.2.3",
     "query-string": "^6.1.0",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2",
+    "react-dom": "^16.3.3",
     "react-native": "~0.55.2",
     "react-native-elements": "^0.19.1",
     "react-native-svg": "^6.5.1",
