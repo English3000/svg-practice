@@ -1,5 +1,5 @@
 import React, { Component, createContext } from "react"
-import { StyleSheet, View, TextInput, Button } from "react-native"
+import { StyleSheet, Platform, View, TextInput, Button } from "react-native"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
 import Gameplay from "./components/Gameplay.js"
@@ -30,16 +30,18 @@ export default class Game extends Component{
     return (
       <ErrorBoundary>
         {form ? [
-          <View key="inputs" style={styles.row}>
+          <View key="inputs" style={[styles.row, Platform.OS !== "web" ? {marginTop: 24} : {}]}>
             <TextInput onChange={this.handleInput}
                        name="game"
                        placeholder="game"
+                       style={{width: "50%"}}
                        value={form.game}
                        onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
                                              this.joinGame(form) : null}/>
             <TextInput onChange={this.handleInput}
                        name="player"
                        placeholder="player"
+                       style={{width: "50%"}}
                        value={form.player}
                        onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
                                              this.joinGame(form) : null}/>

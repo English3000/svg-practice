@@ -14,7 +14,8 @@ export default class Gameplay extends React.Component{
     super(props)
     this.renderBoards = this.renderBoards.bind(this)
 
-    const types = Object.keys(props.game[props.player].islands)
+    const islands = props.game[props.player].islands
+    const types = islands ? Object.keys(islands) : []
     this.state = { unset: _.reject(ISLAND_TYPES, type => types.includes(type)) }
   }
 

@@ -1,5 +1,5 @@
 import {Socket} from "phoenix"
-import createHistory from "history/createBrowserHistory"
+import createHistory from "history/createMemoryHistory"
 
 export const history = createHistory() //onBack => exit_game(channel)
 // in package.json, can add "proxy": "http://localhost:4000/",
