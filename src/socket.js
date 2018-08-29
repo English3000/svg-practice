@@ -1,4 +1,4 @@
-import {Socket} from "phoenix-socket"
+import {Socket} from "phoenix"
 import createHistory from "history/createBrowserHistory"
 
 export const history = createHistory() //onBack => exit_game(channel)
