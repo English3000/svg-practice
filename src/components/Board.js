@@ -1,31 +1,44 @@
 import React from "react"
-import { Platform} from "react-native-web"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { styles } from "../App.js"
 import ErrorBoundary from "./ErrorBoundary.js"
-import Svg from "react-native-svg"
-import { height, width, board, renderTiles } from "./Tile.js"
+import { unit } from "./Island.js"
+import socket, { guess_coordinate } from "../socket.js"
 import _ from "underscore"
-/*
-function renderButtons(size, guesses, islands){
-  // if an island is placed, the whole board re-renders
+
+export default (props) => {
+  let board = _.map(_.range(10), row =>
+                _.map(_.range(10), col =>
+                  <ErrorBoundary key={`${row},${col}`}>
+                    <TouchableOpacity style={[custom.tile, {backgroundColor: "blue"}]}
+                                      onPress={() => props.player ? guess_coordinate(socket.channels[0], props.player, row, col) : null}/>
+                  </ErrorBoundary>
+                )
+              )
+
+  if (props.islands) { // if frontend crashes while placing islands, can't re-place
+    _.each(Object.values(props.islands), island =>
+      _.each( island.coordinates, coord =>
+        board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
+                                                <TouchableOpacity style={[custom.tile, {backgroundColor: "brown"}]}/>
+                                              </ErrorBoundary> )) }
+  _.each( props.guesses.hits, coord =>
+    board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
+                                            <TouchableOpacity style={[custom.tile, {backgroundColor: "green"}]}/>
+                                          </ErrorBoundary> )
+  _.each( props.guesses.misses, coord =>
+    board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
+                                            <TouchableOpacity style={[custom.tile, {backgroundColor: "gray"}]}/>
+                                          </ErrorBoundary> )
+
+  return <ErrorBoundary>
+           <View style={{marginHorizontal: unit(1), borderWidth: 0.5}}>
+             {_.map( board, (row, i) =>
+               <View key={i} style={styles.row}>{row}</View> )}
+           </View>
+         </ErrorBoundary>
 }
 
-export default (props) =>
-  <ErrorBoundary>
-    {renderButtons(10, props.guesses, props.attackable ? null : props.islands)}
-  </ErrorBoundary>
-*/
-
-const filter = (island, hits) => // Does app render faster?
-  _.reject(island, coord => hits.includes(coord))
-// Refactor; Svgs have no `onPress`
-export default (props) =>
-  <ErrorBoundary>
-    <Svg width={Platform.OS === "web" ? width/2 : width} height={height}>
-      {board(10, props.attackable ? props.player : null)}
-      {props.islands ?
-        _.map(Object.values(props.islands), island =>
-          renderTiles(filter(island, props.guesses.hits), "tile", "brown")) : null}
-      {renderTiles(props.guesses.hits, "hit", "green")}
-      {renderTiles(props.guesses.misses, "miss", "gray")}
-    </Svg>
-  </ErrorBoundary>
+const custom = StyleSheet.create({
+  tile: {width: unit(1), height: unit(1), borderWidth: 0.5}
+})

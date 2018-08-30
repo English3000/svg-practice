@@ -3,11 +3,10 @@ import { Platform, View } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
 import Island from "./Island.js"
-import { islands } from "./Tile.js"
 import { Consumer, styles } from "../App.js"
 import _ from "underscore"
 
-export const ISLAND_TYPES = ["atoll", "dot", "L", "S", "square"]
+const ISLAND_TYPES = ["atoll", "dot", "L", "S", "square"]
 // Refactor, using Consumer API
 export default class Gameplay extends React.Component{
   constructor(props) {
@@ -37,14 +36,13 @@ export default class Gameplay extends React.Component{
              [ <Board guesses={opp.guesses}
                       islands={my.islands}
                       attackable={false}
-                      key="islands-set"/> ,
+                      key="set-islands"/> ,
 
-               my.stage === "joined" ? // IslandSet; on bottom, absolute -- CAN an object be destructured?
+               my.stage === "joined" ? // IslandSet; on bottom, absolute
                  <View key="unset-islands" style={styles.row}>
                    {_.map(this.state.unset, type => <Island key={type}
                                                             type={type}
-                                                            player={player}
-                                                            {...islands[type]}/>)}
+                                                            player={player}/>)}
                  </View>
                : null ]
     } else if (player === "player1") { // web: player1 is always on left
@@ -53,8 +51,7 @@ export default class Gameplay extends React.Component{
                    <View>
                      {_.map(this.state.unset, type => <Island key={type}
                                                               type={type}
-                                                              player={player}
-                                                              {...islands[type]}/>)}
+                                                              player={player}/>)}
                    </View>
                  : null}
 
@@ -82,8 +79,7 @@ export default class Gameplay extends React.Component{
                    <View>
                      {_.map(this.state.unset, type => <Island key={type}
                                                               type={type}
-                                                              player={player}
-                                                              {...islands[type]}/>)}
+                                                              player={player}/>)}
                    </View>
                  : null}
                </View> ]
