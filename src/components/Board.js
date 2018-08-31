@@ -5,7 +5,10 @@ import ErrorBoundary from "./ErrorBoundary.js"
 import { unit } from "./Island.js"
 import socket, { guess_coordinate } from "../socket.js"
 import _ from "underscore"
-
+// could add channel event listeners at tile-level to update that one compoent's props instead of re-rendering the whole board
+  // .on("place_island", -- 1st, bounds check ( so theta(1) )
+  // .on("delete_island",
+  // .on("guess_coordinate",
 export default (props) => {
   let board = _.map(_.range(10), row =>
                 _.map(_.range(10), col =>
@@ -16,7 +19,7 @@ export default (props) => {
                 )
               )
 
-  if (props.islands) { // if frontend crashes while placing islands, can't re-place
+  if (props.islands) {
     _.each(Object.values(props.islands), island =>
       _.each( island.coordinates, coord =>
         board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>

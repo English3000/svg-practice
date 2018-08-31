@@ -14,6 +14,7 @@ export const channel = (socket, game, player) =>
 //   channel.push("get_state", {game, player})
 //          .receive("error", response => response.reason)
 
+// API
 export const place_island = (channel, player, island, row, col) =>
   channel.push("place_island", {player, island, row, col})
 

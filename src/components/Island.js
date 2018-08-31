@@ -10,26 +10,26 @@ const bound = height > width ? width-0.5 : height-0.5
 export const unit = multiple => bound/10 * multiple
 
 const islands = {
-  atoll: { coords: [[0,0],[0,1],
-                          [1,1],
-                    [2,0],[2,1]],
-           bounds: {width: unit(2), height: unit(3)} },
+  atoll: { bounds: {width: unit(2), height: unit(3)},
+           coords: [ {row: 0, col: 0}, {row: 0, col: 1},
+                                       {row: 1, col: 1},
+                     {row: 2, col: 0}, {row: 2, col: 1} ] },
 
-  dot: { coords: [[0,0]],
-         bounds: {width: unit(1), height: unit(1)} },
+  dot: { bounds: {width: unit(1), height: unit(1)},
+         coords: [{row: 0, col: 0}] },
 
-  L: { coords: [[0,0],
-                [1,0],
-                [2,0],[2,1]],
-       bounds: {width: unit(2), height: unit(3)} },
+  L: { bounds: {width: unit(2), height: unit(3)},
+       coords: [ {row: 0, col: 0},
+                 {row: 1, col: 0},
+                 {row: 2, col: 0}, {row: 2, col: 1} ] },
 
-  S: { coords: [      [0,1],[0,2],
-                [1,0],[1,1]      ],
-       bounds: {width: unit(3), height: unit(2)} },
+  S: { bounds: {width: unit(3), height: unit(2)},
+       coords: [                  {row: 0, col: 1}, {row: 0, col: 2},
+                {row: 1, col: 0}, {row: 1, col: 1}                  ] },
 
-  square: { coords: [[0,0],[0,1],
-                     [1,0],[1,1]],
-            bounds: {width: unit(2), height: unit(2)} }
+  square: { bounds: {width: unit(2), height: unit(2)},
+            coords: [ {row: 0, col: 0}, {row: 0, col: 1},
+                      {row: 1, col: 0}, {row: 1, col: 1} ] }
 }
 
 export default class Island extends React.Component{
@@ -40,18 +40,22 @@ export default class Island extends React.Component{
   }
 
   render(){
-    const {coords, bounds} = islands[this.props.type]
+    let min = 0
+    let {coords, bounds} = islands[this.props.type]
+    if (this.props.coords) coords = this.props.coords
 
-    return ( // onDrag, appears UNDERNEATH board
+    if (this.props.type === "atoll") min = 1
+
+    return ( // onDrag, island appears UNDERNEATH board
       <ErrorBoundary>
-        <Animated.View style={{transform: this.state.pan.getTranslateTransform(), margin: 5}}
+        <Animated.View style={[{transform: this.state.pan.getTranslateTransform(), margin: 5}, this.props.style ? this.props.style : {}]}
                        {...this.panResponder.panHandlers}>
           <Svg width={bounds.width} height={bounds.height}>
             {_.map( coords, coord =>
-              <Rect x={`${unit(coord[1])}`}  width={`${unit(1)}`}
-                    y={`${unit(coord[0])}`}  height={`${unit(1)}`}
-                    fill="brown"             stroke="black"
-                    key={`${this.props.type}(${coord[1]},${coord[0]})`}/> )}
+              <Rect x={`${unit(coord.col - min)}`}  width={`${unit(1)}`}
+                    y={`${unit(coord.row - min)}`}  height={`${unit(1)}`}
+                    fill="brown"                    stroke="black"
+                    key={`${this.props.type}(${coord.row},${coord.col})`}/> )}
           </Svg>
         </Animated.View>
       </ErrorBoundary>
@@ -63,13 +67,13 @@ export default class Island extends React.Component{
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([ null, { dx: this.state.pan.x,
                                                    dy: this.state.pan.y } ]),
-      onPanResponderRelease: () => {
+      onPanResponderRelease: (event) => { console.log(event);
         const [row, col] = [this.locate(this.state.pan.x), this.locate(this.state.pan.y)]
         if (row /* condition */ && col /* condition */) { // locating depends on styling
           place_island(socket.channels[0], this.props.player, this.props.type, row, col)
             .receive("error", Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}).start) // TypeError b/c not using () =>
             // https://facebook.github.io/react-native/docs/animated#spring
-        } else {
+        } else { // unset island
           delete_island(socket.channels[0], this.props.player, this.props.type)
             .receive("ok", Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}).start)
         }

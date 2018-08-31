@@ -1,24 +1,20 @@
 # TODO (work from top, down)
 
+> validate works on mobile
+
 BUGS:
 * `App.js`: onEnter
-* `Island.js`: `PanResponder` onPanResponderRelease
-* `server.ex`: `GenServer.call` via tuple
 
 ### `socket.js`
 ### `index.js`
-
 ### `App.js`
-- [ ] > validate event handlers
-
 ### `Instruction.js`
 
 ### `Gameplay.js`
-- [ ] + `absolute` styling for IslandSet `<View>`
+- [ ] + re-style IslandSet to bottom
 
 ### `Board.js`
+- [ ] + handle client-side crashes while placing islands
 
 ### `Island.js`
 - [ ] + `locate`
-
-### `Tile.js`
