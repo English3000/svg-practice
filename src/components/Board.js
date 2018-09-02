@@ -14,7 +14,7 @@ export default (props) => {
                 _.map(_.range(10), col =>
                   <ErrorBoundary key={`${row},${col}`}>
                     <TouchableOpacity style={[custom.tile, {backgroundColor: "blue"}]}
-                                      onPress={() => props.player.stage === "turn" ? guess_coordinate(socket.channels[0], props.player, row, col) : null}/>
+                                      onPress={() => props.game[props.player].stage === "turn" ? guess_coordinate(socket.channels[0], props.player, row, col) : null}/>
                   </ErrorBoundary>
                 )
               )

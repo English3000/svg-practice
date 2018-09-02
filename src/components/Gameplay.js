@@ -36,6 +36,8 @@ export default class Gameplay extends React.Component{
 
              [ <Board guesses={opp.guesses}
                       islands={my.islands}
+                      player={player}
+                      game={game}
                       key="set-islands"/> ,
 
                my.stage === "joined" ?
@@ -61,7 +63,9 @@ export default class Gameplay extends React.Component{
 
                <View key="me" style={styles.row}>
                  <Board guesses={opp.guesses}
-                        islands={my.islands}/>
+                        islands={my.islands}
+                        player={player}
+                        game={game}/>
 
                  {my.stage === "joined" ?
                    this.renderIslandSet() : null}
