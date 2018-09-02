@@ -19,7 +19,6 @@ export const { Provider, Consumer } = createContext()
 export default class Game extends Component{
   constructor(){
     super()
-    this.handleInput = this.handleInput.bind(this)
     this.state = history.location.search.length > 1 ?
                   { form: false } :
                   { form: {game: "", player: "", complete: false} }
@@ -31,8 +30,7 @@ export default class Game extends Component{
       <ErrorBoundary>
         {form ? [
           <View key="inputs" style={[styles.row, Platform.OS !== "web" ? {marginTop: 24} : {}]}>
-            <TextInput onChange={this.handleInput}
-                       name="game"
+            <TextInput onChangeText={text => this.handleInput("game", text)}
                        placeholder="game"
                        style={{width: "50%"}}
                        value={form.game}
@@ -40,8 +38,7 @@ export default class Game extends Component{
                                              this.joinGame(form) : null}
                        autoFocus/>
 
-            <TextInput onChange={this.handleInput}
-                       name="player"
+            <TextInput onChangeText={text => this.handleInput("player", text)}
                        placeholder="player"
                        style={{width: "50%"}}
                        value={form.player}
@@ -70,8 +67,7 @@ export default class Game extends Component{
       </ErrorBoundary>
     )
   }
-  handleInput(event){
-    const {name, value}            = event.target
+  handleInput(name, value){
     const {game, player, complete} = this.state.form
     let   form
 
@@ -87,7 +83,7 @@ export default class Game extends Component{
 
     this.setState({form})
   }
-  joinGame(params){
+  joinGame(params){ // not joining on mobile
     const {game, player} = params
     if (game.length > 0 && player.length > 0) {
       let gameChannel = channel(socket, game, player) // validate all handlers
