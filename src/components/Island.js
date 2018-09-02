@@ -40,11 +40,13 @@ export default class Island extends React.Component{
   }
 
   render(){
-    let min = 0
+    let [minX, minY] = [0, 0]
     let {coords, bounds} = islands[this.props.type]
-    if (this.props.coords) coords = this.props.coords
-
-    if (this.props.type === "atoll") min = 1
+    if (this.props.coords) {
+      coords = this.props.coords
+      minX = coords[0].col
+      minY = coords[0].row
+    }
 
     return ( // onDrag, island appears UNDERNEATH board
       <ErrorBoundary>
@@ -52,8 +54,8 @@ export default class Island extends React.Component{
                        {...this.panResponder.panHandlers}>
           <Svg width={bounds.width} height={bounds.height}>
             {_.map( coords, coord =>
-              <Rect x={`${unit(coord.col - min)}`}  width={`${unit(1)}`}
-                    y={`${unit(coord.row - min)}`}  height={`${unit(1)}`}
+              <Rect x={`${unit(coord.col - minX)}`}  width={`${unit(1)}`}
+                    y={`${unit(coord.row - minY)}`}  height={`${unit(1)}`}
                     fill="brown"                    stroke="black"
                     key={`${this.props.type}(${coord.row},${coord.col})`}/> )}
           </Svg>
@@ -83,6 +85,6 @@ export default class Island extends React.Component{
   }
   locate(coord){ // location should be derived from board, not island (otherwise it's always relative)
     console.log(coord)
-    return coord._value
+    return 6
   }
 }

@@ -27,6 +27,8 @@ export default class Gameplay extends React.Component{
   renderBoards({game, player}){
     const opp = (player === "player1") ? game["player2"] : game["player1"]
     const my = game[player]
+    console.log(my);
+    console.log(opp);
     if (Platform.OS !== "web") { // Show player2 board below
       return my.stage === "turn" ? // handle game end; need island hits
                <Board guesses={my.guesses}
@@ -44,7 +46,9 @@ export default class Gameplay extends React.Component{
                    this.renderIslandSet() : null}
 
                  <Board guesses={opp.guesses}
-                        islands={my.islands}/>
+                        islands={my.islands}
+                        player={player}
+                        game={game}/>
                </View> ,
 
                <Board guesses={my.guesses}
@@ -75,15 +79,6 @@ export default class Gameplay extends React.Component{
                          type={type}
                          player={player}/> )}
              </View>
-             {// render over board; if frontend crashes, movable islands will appear properly
-              // should be able to unset
-              _.map( game[player].islands, island =>
-                // need all positioned properly (incl'n proper side)
-                <Island key={island.type}
-                        style={{position: "absolute", zIndex: 2, marginTop: 0.5, left: 144}}
-                        type={island.type}
-                        coords={island.coordinates}
-                        player={player}/> )}
            </ErrorBoundary>
   }
 }

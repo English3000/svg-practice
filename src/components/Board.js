@@ -2,7 +2,7 @@ import React from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { styles } from "../App.js"
 import ErrorBoundary from "./ErrorBoundary.js"
-import { unit } from "./Island.js"
+import Island, { unit } from "./Island.js"
 import socket, { guess_coordinate } from "../socket.js"
 import _ from "underscore"
 // could add channel event listeners at tile-level to update that one compoent's props instead of re-rendering the whole board
@@ -14,7 +14,7 @@ export default (props) => {
                 _.map(_.range(10), col =>
                   <ErrorBoundary key={`${row},${col}`}>
                     <TouchableOpacity style={[custom.tile, {backgroundColor: "blue"}]}
-                                      onPress={() => props.player ? guess_coordinate(socket.channels[0], props.player, row, col) : null}/>
+                                      onPress={() => props.player.stage === "turn" ? guess_coordinate(socket.channels[0], props.player, row, col) : null}/>
                   </ErrorBoundary>
                 )
               )
@@ -38,6 +38,13 @@ export default (props) => {
            <View style={{marginHorizontal: unit(1), borderWidth: 0.5}}>
              {_.map( board, (row, i) =>
                <View key={i} style={styles.row}>{row}</View> )}
+
+             {props.game ? _.map( props.game[props.player].islands, island =>
+               <Island key={island.type}
+                       style={{position: "absolute", zIndex: 1, left: unit(island.coordinates[0].col - 1), top: unit(island.coordinates[0].row - 1)}}
+                       type={island.type}
+                       coords={island.coordinates}
+                       player={props.player}/> ) : null}
            </View>
          </ErrorBoundary>
 }
