@@ -25,47 +25,31 @@ export default class Gameplay extends React.Component{
                    </ErrorBoundary> }
 
   renderBoards({game, player}){
-    const opp = (player === "player1") ? game["player2"] : game["player1"]
+    const opp = (player === "player1") ? "player2" : "player1"
     const my = game[player]
-    console.log(my);
-    console.log(opp);
+
     if (Platform.OS !== "web") { // Show player2 board below
       return my.stage === "turn" ? // handle game end; need island hits
-               <Board guesses={my.guesses}
-                      player={player}/> :
+               <Board id={player}/> :
 
-             [ <Board guesses={opp.guesses}
-                      islands={my.islands}
-                      player={player}
-                      game={game}
-                      key="set-islands"/> ,
+             [ <Board id={opp} key="set-islands"/> ,
 
                my.stage === "joined" ?
                  this.renderIslandSet(styles.row) : null ]
     } else if (player === "player1") { // web
       return [ <View key="me" style={styles.row}>
-                 {my.stage === "joined" ? // IslandSet
+                 {my.stage === "joined" ?
                    this.renderIslandSet() : null}
 
-                 <Board guesses={opp.guesses}
-                        islands={my.islands}
-                        player={player}
-                        game={game}/>
+                 <Board id={opp}/>
                </View> ,
 
-               <Board guesses={my.guesses}
-                      player={player}
-                      key="opp"/> ]
+               <Board id={player} key="opp"/> ]
     } else {
-      return [ <Board guesses={my.guesses}
-                      player={player}
-                      key="opp"/> ,
+      return [ <Board id={player} key="opp"/> ,
 
                <View key="me" style={styles.row}>
-                 <Board guesses={opp.guesses}
-                        islands={my.islands}
-                        player={player}
-                        game={game}/>
+                 <Board id={opp}/>
 
                  {my.stage === "joined" ?
                    this.renderIslandSet() : null}

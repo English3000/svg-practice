@@ -48,6 +48,8 @@ export default class Island extends React.Component{
       minY = coords[0].row
     }
 
+    if (this.props.type === "S") minY-- // offset
+
     return ( // onDrag, island appears UNDERNEATH board
       <ErrorBoundary>
         <Animated.View style={[{transform: this.state.pan.getTranslateTransform(), margin: 5}, this.props.style ? this.props.style : {}]}
@@ -85,6 +87,6 @@ export default class Island extends React.Component{
   }
   locate(coord){ // location should be derived from board, not island (otherwise it's always relative)
     console.log(coord)
-    return 6
+    return coord._value
   }
 }
