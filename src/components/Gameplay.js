@@ -1,14 +1,16 @@
-import React from "react"
+import React, { Component, createContext } from "react"
 import { Platform, View } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
 import Island, { unit } from "./Island.js"
-import { Consumer, styles } from "../App.js"
+import { styles } from "../App.js"
 import _ from "underscore"
+
+export const { Provider, Consumer } = createContext()
 
 const ISLAND_TYPES = ["atoll", "dot", "L", "S", "square"]
 
-export default class Gameplay extends React.Component{
+export default class Gameplay extends Component{
   constructor(props) {
     super(props)
     this.renderBoards = this.renderBoards.bind(this)
@@ -19,9 +21,12 @@ export default class Gameplay extends React.Component{
   } // on "place_island", could make it disappear from IslandSet (@ Island-lv)
 
   render(){ return <ErrorBoundary>
-                     <View key="display" style={styles.row}>
-                       {this.renderBoards(this.props)}
-                     </View>
+                     <Provider value={{game: this.props.game, player: this.props.player}}>
+                       <View key="display"
+                             style={Platform.OS === "web" ? styles.row : {}}>
+                         {this.renderBoards(this.props)}
+                       </View>
+                     </Provider>
                    </ErrorBoundary> }
 
   renderBoards({game, player}){

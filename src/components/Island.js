@@ -6,7 +6,7 @@ import socket, { place_island, delete_island } from "../socket.js"
 import _ from "underscore"
 
 export const { height, width } = Dimensions.get("window")
-const bound = height > width ? width-0.5 : height-0.5
+const bound = height > width ? (width-0.5) * 0.8 : (height-0.5) * 0.8
 export const unit = multiple => bound/10 * multiple
 
 const islands = {
@@ -73,7 +73,7 @@ export default class Island extends React.Component{
                                                    dy: this.state.pan.y } ]),
       onPanResponderRelease: (event) => { console.log(event);
         const [row, col] = [this.locate(this.state.pan.x), this.locate(this.state.pan.y)]
-        if (row /* condition */ && col /* condition */) { // locating depends on styling
+        if (row /* condition */ && col /* condition */) {
           place_island(socket.channels[0], this.props.player, this.props.type, row, col)
             .receive("error", Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}).start) // TypeError b/c not using () =>
             // https://facebook.github.io/react-native/docs/animated#spring

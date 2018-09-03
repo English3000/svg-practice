@@ -1,4 +1,4 @@
-import React, { Component, createContext } from "react"
+import React from "react"
 import { StyleSheet, Platform, View, TextInput, Button } from "react-native"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
@@ -14,9 +14,7 @@ export const styles = StyleSheet.create({
   row: {flexDirection: "row"}
 })
 
-export const { Provider, Consumer } = createContext()
-
-export default class Game extends Component{
+export default class Game extends React.Component{
   constructor(){
     super()
     this.state = history.location.search.length > 1 ?
@@ -55,15 +53,8 @@ export default class Game extends Component{
         {message ?
           <Instruction message={message}/> : null}
 
-        {payload ? // use Consumer so lifecycle methods can access data
-          // actually, probably don't need Provider-Consumer here
-          <Provider value={{ store: {game: payload, player: id},
-                             actions: {} }}>
-            <Consumer>
-              { ({store}) => <Gameplay game={store.game}
-                                       player={store.player}/> }
-            </Consumer>
-          </Provider> : null}
+        {payload ?
+          <Gameplay game={payload} player={id}/> : null}
       </ErrorBoundary>
     )
   }

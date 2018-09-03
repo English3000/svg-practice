@@ -1,21 +1,21 @@
 import React from "react"
-import { Text } from "react-native"
+import { StyleSheet, Text } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 // coupled to IslandsEngine.Game.Stage atoms
 function renderInstruction(instruction){
   switch (instruction) {
     case "joined":
-      return <Text>Drag your islands onto the board!</Text>
+      return "Drag your islands onto the board!"
     case "ready":
-      return <Text>Waiting for other player...</Text>
+      return "Waiting for other player..."
     case "turn":
-      return <Text>Your turn! Click a coordinate on your opponent's board to attack.</Text>
+      return "Your turn! Click a coordinate on your opponent's board to attack."
     case "wait":
-      return <Text>Your opponent attacking...</Text>
+      return "Your opponent attacking..."
     case "won":
-      return <Text>Congrats! You've WON.</Text>
+      return "Congrats! You've WON."
     case "lost":
-      return <Text>Your opponent has won... Better luck next game!</Text>
+      return "Your opponent has won... Better luck next game!"
     default:
       return null
   }
@@ -25,5 +25,9 @@ export default ({message}) =>
   <ErrorBoundary>
     { message.error ?
        <Text>{message.error}</Text> :
-       renderInstruction(message.instruction) }
+       <Text style={custom.instruction}>{renderInstruction(message.instruction)}</Text> }
   </ErrorBoundary>
+
+const custom = StyleSheet.create({
+  instruction: {textAlign: "center", fontSize: 24, margin: 18}
+})

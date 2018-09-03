@@ -1,6 +1,7 @@
 import React from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import { styles, Consumer } from "../App.js"
+import { styles } from "../App.js"
+import { Consumer } from "./Gameplay.js"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Island, { unit } from "./Island.js"
 import socket, { guess_coordinate } from "../socket.js"
@@ -11,16 +12,16 @@ import _ from "underscore"
   // .on("guess_coordinate",
 export default ({id}) =>
   <Consumer>
-    { ({store}) => {
-      const attacker = store.game[id]
-      const owner = (id === "player1") ? store.game["player2"] : store.game["player1"]
+    { ({game, player}) => {
+      const attacker = game[id]
+      const owner = (id === "player1") ? game["player2"] : game["player1"]
 
       let board = _.map(_.range(10), row =>
                     _.map(_.range(10), col =>
                       <ErrorBoundary key={`${row},${col}`}>
                         <TouchableOpacity style={[custom.tile, {backgroundColor: "blue"}]}
                                           onPress={() => attacker.stage === "turn" &&
-                                                         attacker.key === store.player ?
+                                                         attacker.key === player ?
                                                            guess_coordinate(socket.channels[0], id, row, col) : null}/>
                       </ErrorBoundary>
                     )
@@ -54,7 +55,7 @@ export default ({id}) =>
                                   style={{position: "absolute", zIndex: 1, left, top}}
                                   type={island.type}
                                   coords={island.coordinates}
-                                  player={store.player}/>
+                                  player={player}/>
                  }) : null}
                </View>
              </ErrorBoundary>
