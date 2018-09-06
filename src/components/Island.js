@@ -6,7 +6,7 @@ import socket, { place_island, delete_island } from "../socket.js"
 import _ from "underscore"
 
 export const { height, width } = Dimensions.get("window")
-const bound = height > width ? (width-0.5) * 0.8 : (height-0.5) * 0.8
+const bound = height > width ? (width-0.5) * 0.6 : (height-0.5) * 0.6
 export const unit = multiple => bound/10 * multiple
 
 const islands = {

@@ -32,16 +32,16 @@ export default class Game extends React.Component{
                        placeholder="game"
                        style={{width: "50%"}}
                        value={form.game}
-                       onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
-                                             this.joinGame(form) : null}
+                       onKeyPress={event => form.complete && event.keyCode === 13 ? // onEnter
+                                              this.joinGame(form) : null}
                        autoFocus/>
 
             <TextInput onChangeText={text => this.handleInput("player", text)}
                        placeholder="player"
                        style={{width: "50%"}}
                        value={form.player}
-                       onKeyDown={event => form.complete && event.keyCode === 13 ? // onEnter
-                                             this.joinGame(form) : null}/>
+                       onKeyPress={event => form.complete && event.keyCode === 13 ? // onEnter
+                                              this.joinGame(form) : null}/>
           </View>,
 
           form.complete ?
@@ -94,7 +94,6 @@ export default class Game extends React.Component{
           history.push(`/?game=${game}&player=${player}`)
       // `join_game` has own error-handling b/c can't add event listeners until AFTER joined channel
       }).receive("error", response => this.setState({ message: {error: response.reason} }))
-      gameChannel.on( "game_joined",        payload => this.setState({payload}) )
     }
   } // When done, can write blog post about my channel-based architecture. (submit this to Elixir Radar)
 

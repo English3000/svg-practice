@@ -1,5 +1,5 @@
 import React, { Component, createContext } from "react"
-import { Platform, View } from "react-native"
+import { StyleSheet, Platform, View } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
 import Island, { unit } from "./Island.js"
@@ -23,7 +23,7 @@ export default class Gameplay extends Component{
   render(){ return <ErrorBoundary>
                      <Provider value={{game: this.props.game, player: this.props.player}}>
                        <View key="display"
-                             style={Platform.OS === "web" ? styles.row : {}}>
+                             style={[{justifyContent: "center"}, Platform.OS === "web" ? styles.row : {}]}>
                          {this.renderBoards(this.props)}
                        </View>
                      </Provider>
@@ -44,7 +44,7 @@ export default class Gameplay extends Component{
     } else if (player === "player1") { // web
       return [ <View key="me" style={styles.row}>
                  {my.stage === "joined" ?
-                   this.renderIslandSet() : null}
+                   this.renderIslandSet([custom.web, {marginLeft: unit(-2.25)}]) : null}
 
                  <Board id={opp}/>
                </View> ,
@@ -57,7 +57,7 @@ export default class Gameplay extends Component{
                  <Board id={opp}/>
 
                  {my.stage === "joined" ?
-                   this.renderIslandSet() : null}
+                   this.renderIslandSet([custom.web, {marginLeft: unit(12)}]) : null}
                </View> ]
     }
   }
@@ -75,3 +75,7 @@ export default class Gameplay extends Component{
            </ErrorBoundary>
   }
 }
+
+const custom = StyleSheet.create({
+  web: {position: "absolute", zIndex: 1}
+})
