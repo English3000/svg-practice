@@ -48,7 +48,7 @@ export default class Island extends React.Component{
       minY = coords[0].row
     }
 
-    if (this.props.type === "S") minY-- // offset
+    if (this.props.type === "S" && this.props.player === "player1") minY-- // offset
 
     return ( // onDrag, island appears UNDERNEATH board
       <ErrorBoundary>
