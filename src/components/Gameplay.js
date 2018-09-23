@@ -2,8 +2,10 @@ import React, { Component, createContext } from "react"
 import { StyleSheet, Platform, View } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
-import Island, { unit } from "./Island.js"
+import Island, { unit, islands } from "./Island.js"
 import { styles } from "../App.js"
+import socket from "../socket.js"
+import merge from "lodash.merge"
 import _ from "underscore"
 
 export const { Provider, Consumer } = createContext()
@@ -18,7 +20,22 @@ export default class Gameplay extends Component{
     const islands = props.game[props.player].islands
     const types = islands ? Object.keys(islands) : []
     this.state = { unset: _.reject(ISLAND_TYPES, type => types.includes(type)) }
-  } // on "place_island", could make it disappear from IslandSet (@ Island-lv)
+  }
+
+  componentDidMount(){
+    socket.channels[0].on("island_placed", ({type}) => {
+      let {unset} = merge({}, this.state)
+      if (unset.includes(type)) {
+        unset.splice(unset.indexOf(type), 1)
+        this.setState({unset})
+      }
+    })
+
+    socket.channels[0].on("island_removed", ({type}) => {
+      let {unset} = merge({}, this.state)
+      if (!unset.includes(type)) this.setState({unset: unset.concat(type)})
+    })
+  }
 
   render(){ return <ErrorBoundary>
                      <Provider value={{game: this.props.game, player: this.props.player}}>
@@ -65,12 +82,19 @@ export default class Gameplay extends Component{
   renderIslandSet(style = {}){
     const {game, player} = this.props
 
+    let topLeft = 4
+
     return <ErrorBoundary>
              <View key="unset-islands" style={style}>
-               {_.map( this.state.unset, type =>
-                 <Island key={type}
-                         type={type}
-                         player={player}/> )}
+               {_.map( this.state.unset, type => {
+                 height = islands[type].bounds.height + 5 // margin
+                 topLeft += height
+
+                 return <Island key={type}
+                                set={false}
+                                type={type}
+                                player={player}
+                                topLeft={topLeft - height}/> })}
              </View>
            </ErrorBoundary>
   }

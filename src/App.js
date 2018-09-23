@@ -78,12 +78,9 @@ export default class Game extends React.Component{
     const {game, player} = params
     if (game.length > 0 && player.length > 0) {
       let gameChannel = channel(socket, game, player) // validate all handlers
-      // ACTIONS
-      // Move down component hierarchy to avoid full page re-render.
-        // If app crashes, .join() can then update app-lv state
       gameChannel.on( "error",                error => this.setState({error}) )
       gameChannel.on( "island_placed",       island => this.setState({payload: this.updatePayload("island_placed", island)}) )
-      gameChannel.on( "island_removed",         key => this.setState({payload: this.updatePayload("island_removed", key)}) )
+      gameChannel.on( "island_removed",    ({type}) => this.setState({payload: this.updatePayload("island_removed", type)}) )
       gameChannel.on( "islands_set",    stageAndKey => this.setState({payload: this.updatePayload("islands_set", stageAndKey)}) )
       gameChannel.on( "coordinate_guessed", results => this.setState({payload: this.updatePayload("coordinate_guessed", results)}) )
       gameChannel.join()
@@ -92,7 +89,7 @@ export default class Game extends React.Component{
           if (player1.name === player) this.setState({ form: false, message: {instruction: player1.stage}, payload, id: "player1" })
           if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
           history.push(`/?game=${game}&player=${player}`)
-      // `join_game` has own error-handling b/c can't add event listeners until AFTER joined channel
+      // `join` has own error-handling b/c can't add event listeners until AFTER joined channel
       }).receive("error", response => this.setState({ message: {error: response.reason} }))
     }
   } // When done, can write blog post about my channel-based architecture. (submit this to Elixir Radar)

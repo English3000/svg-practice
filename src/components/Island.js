@@ -9,7 +9,7 @@ export const { height, width } = Dimensions.get("window")
 const bound = height > width ? (width-0.5) * 0.6 : (height-0.5) * 0.6
 export const unit = multiple => bound/10 * multiple
 
-const islands = {
+export const islands = {
   atoll: { bounds: {width: unit(2), height: unit(3)},
            coords: [ {row: 0, col: 0}, {row: 0, col: 1},
                                        {row: 1, col: 1},
@@ -33,10 +33,13 @@ const islands = {
 }
 
 export default class Island extends React.Component{
-  constructor(){
-    super()        // defaults to {x: 0, y: 0}
+  constructor(props){
+    super(props)        // defaults to {x: 0, y: 0}
     this.state = { pan: new Animated.ValueXY() }
     this.panResponder = {}
+    this.locate = this.locate.bind(this)
+
+    console.log("constructing", props.type);
   }
 
   render(){
@@ -48,7 +51,7 @@ export default class Island extends React.Component{
       minY = coords[0].row
     }
 
-    if (this.props.type === "S" && this.props.player === "player1") minY-- // offset
+    if (this.props.type === "S" && this.props.player === "player1" && this.props.set === true) minY-- // offset
 
     return ( // onDrag, island appears UNDERNEATH board
       <ErrorBoundary>
@@ -67,26 +70,59 @@ export default class Island extends React.Component{
   }
 
   componentDidMount(){
+    const {pan} = this.state
+    const {player, set, type} = this.props
+
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([ null, { dx: this.state.pan.x,
-                                                   dy: this.state.pan.y } ]),
-      onPanResponderRelease: (event) => { console.log(event);
-        const [row, col] = [this.locate(this.state.pan.x), this.locate(this.state.pan.y)]
-        if (row /* condition */ && col /* condition */) {
-          place_island(socket.channels[0], this.props.player, this.props.type, row, col)
-            .receive("error", Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}).start) // TypeError b/c not using () =>
+      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
+      onPanResponderRelease: (event) => {
+        const [row, col] = this.locate(pan)
+
+        if (row >= 0 && row <= 9 && col >= 0 && col <= 9) {
+          place_island(socket.channels[0], player, type, row + (set && type !== "dot" ? 0 : 1), col + (set && type !== "dot" ? 0 : 1))
+            .receive("error", () => Animated.spring(pan, {toValue: {x: 0, y: 0}}).start() )
             // https://facebook.github.io/react-native/docs/animated#spring
         } else { // unset island
-          delete_island(socket.channels[0], this.props.player, this.props.type)
-            .receive("ok", Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}).start)
+          delete_island(socket.channels[0], player, type)
+            .receive("ok", () => Animated.spring(pan, {toValue: {x: 0, y: 0}}).start() )
         }
       }
     })
+
+    socket.channels[0].on("island_placed", ({coordinates, type}) => {
+      if (this.props.type === type) {
+        console.log("timeout");
+        setTimeout(() => {}, 0)
+        console.log("setState");
+        this.setState({ pan: new Animated.ValueXY({ x: coordinates[0].col,
+                                                    y: coordinates[0].row - (this.props.type === "S" ? 1 : 0) }) })
+      }
+    })
+
     this.forceUpdate()
   }
-  locate(coord){ // location should be derived from board, not island (otherwise it's always relative)
-    console.log(coord)
-    return coord._value
+  locate({x, y}){ // location should be derived from board, not island (otherwise it's always relative)
+    let row, col
+
+    if (this.props.set) {
+      row = Math.round(this.props.coords[0].row + y._value / unit(1))
+      col = Math.round(this.props.coords[0].col + x._value / unit(1))
+      if (this.props.type === "S" || this.props.type === "dot") {
+        row--
+        col--
+      }
+    } else {
+      row = Math.round( (this.props.topLeft + y._value) / unit(1) )
+
+      if (this.props.player === "player1") {
+        col = Math.round(x._value / unit(1) - 3) // buffer to left-edge of island
+      } else if (this.props.player === "player2") {
+        col = Math.round(9 + x._value / unit(1) + 2) // buffer to left-edge of board
+      }
+    }
+    console.log("row:", row);
+    console.log("column:", col);
+    return [row, col]
   }
 }
