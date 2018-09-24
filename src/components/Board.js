@@ -53,6 +53,8 @@ export default ({id}) =>
                    const left = unit(island.coordinates[0].col - 1)
                    const  top = unit(island.coordinates[0].row - (island.type === "S" ? 2 : 1) ) // S offset
 
+                   console.log(island);
+
                    console.log("mounting", island.type);
                    // BUG: not constructing on re-place
                    return <Island key={island.type}
