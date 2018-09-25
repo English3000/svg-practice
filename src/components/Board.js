@@ -6,10 +6,7 @@ import ErrorBoundary from "./ErrorBoundary.js"
 import Island, { unit } from "./Island.js"
 import socket, { guess_coordinate } from "../socket.js"
 import _ from "underscore"
-// could add channel event listeners at tile-level to update that one compoent's props instead of re-rendering the whole board
-  // .on("place_island", -- 1st, bounds check ( so theta(1) )
-  // .on("delete_island",
-  // .on("guess_coordinate",
+
 export default ({id}) =>
   <Consumer>
     { ({game, player}) => {
@@ -48,22 +45,6 @@ export default ({id}) =>
                <View style={{marginHorizontal: unit(1), borderWidth: 0.5}}>
                  {_.map( board, (row, i) =>
                    <View key={i} style={styles.row}>{row}</View> )}
-
-                 {owner.stage === "joined" ? _.map(owner.islands, island => {
-                   const left = unit(island.coordinates[0].col - 1)
-                   const  top = unit(island.coordinates[0].row - (island.type === "S" ? 2 : 1) ) // S offset
-
-                   console.log(island);
-
-                   console.log("mounting", island.type);
-                   // BUG: not constructing on re-place
-                   return <Island key={island.type}
-                                  set={true}
-                                  style={{position: "absolute", zIndex: 1, left, top}}
-                                  type={island.type}
-                                  coords={island.coordinates}
-                                  player={player}/>
-                 }) : null}
                </View>
              </ErrorBoundary>
     } }
