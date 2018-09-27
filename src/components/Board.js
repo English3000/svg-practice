@@ -26,7 +26,7 @@ export default ({id}) =>
                     )
                   )
 
-      if (owner.islands) {
+      if (owner.stage !== "joined" && owner.islands) {
         _.each(Object.values(owner.islands), island =>
           _.each( island.coordinates, coord =>
             board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>

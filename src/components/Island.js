@@ -1,8 +1,8 @@
 import React from "react"
 import { Dimensions, PanResponder, Animated } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
+import Consumer from "./Gameplay.js"
 import Svg, { Rect } from "react-native-svg"
-import socket, { place_island, delete_island } from "../socket.js"
 import _ from "underscore"
 
 export const { height, width } = Dimensions.get("window")
@@ -16,26 +16,30 @@ export default class Island extends React.Component{
     this.panResponder = {}
     this.locate = this.locate.bind(this)
 
-    console.log("constructing", props.island.type);
+    console.log("constructing", props.type);
   }
 
   render(){
-    let {coords, bounds} = this.props.island
+    return <Consumer>
+      { ({game, player}) => {
+        let {coordinates, bounds} = game[player][this.props.type]
 
-    return (
-      <ErrorBoundary>
-        <Animated.View style={[{transform: this.state.pan.getTranslateTransform(), margin: 5}, this.props.style ? this.props.style : {}]}
-                       {...this.panResponder.panHandlers}>
-          <Svg width={unit(bounds.width)} height={unit(bounds.height)}>
-            {_.map( coords, coord =>
-              <Rect x={`${unit(coord.col)}`}  width={`${unit(1)}`}
-                    y={`${unit(coord.row)}`}  height={`${unit(1)}`}
-                    fill="brown"              stroke="black"
-                    key={`${this.props.type}(${coord.row},${coord.col})`}/> )}
-          </Svg>
-        </Animated.View>
-      </ErrorBoundary>
-    )
+        return (
+          <ErrorBoundary>
+            <Animated.View style={[{transform: this.state.pan.getTranslateTransform(), margin: 5}, this.props.style ? this.props.style : {}]}
+                           {...this.panResponder.panHandlers}>
+              <Svg width={unit(bounds.width)} height={unit(bounds.height)}>
+                {_.map( coordinates, coord =>
+                  <Rect x={`${unit(coord.col)}`}  width={`${unit(1)}`}
+                        y={`${unit(coord.row)}`}  height={`${unit(1)}`}
+                        fill="brown"              stroke="black"
+                        key={`${this.props.key}(${coord.row},${coord.col})`}/> )}
+              </Svg>
+            </Animated.View>
+          </ErrorBoundary>
+        )
+      }}
+    </Consumer>
   }
 
   componentDidMount(){
@@ -43,13 +47,18 @@ export default class Island extends React.Component{
 
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}])
-    })
+      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
+      onPanResponderRelease: (event) => {
+        const [row, col] = this.locate(pan)
 
-    this.forceUpdate()
+        if (row >= 0 && row <= 9 && col >= 0 && col <= 9) {
+          // Set top_left to new coord (row + 1, col + 1)
+        } // Then set_islands can use the `MapSet.disjoint?` logic to approve or deny based on `top_left` + `type`
+      }
+    })
   }
 
-  locate({x, y}){ // NOTE: use for each island when setting them
+  locate({x, y}){
     let row = Math.round( (this.props.topLeft + y._value) / unit(1) )
     let col
 

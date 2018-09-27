@@ -4,7 +4,7 @@ import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
 import Island, { unit } from "./Island.js"
 import { styles } from "../App.js"
-import socket from "../socket.js"
+import socket, { set_islands } from "../socket.js"
 import merge from "lodash.merge"
 import _ from "underscore"
 
@@ -14,12 +14,11 @@ export default class Gameplay extends Component{
   constructor(props) {
     super(props)
     this.renderBoards = this.renderBoards.bind(this)
-
-    const {stage, islands} = props.game[props.player]
-    this.state = {unset: stage === "joined" ? islands : []}
+    this.state = {unset: {}}
   }
 
-  render(){ return <ErrorBoundary>
+  render(){ console.log(this.state);
+    return <ErrorBoundary>
                      <Provider value={{game: this.props.game, player: this.props.player}}>
                        <View key="display"
                              style={[{justifyContent: "center"}, Platform.OS === "web" ? styles.row : {}]}>
@@ -28,7 +27,12 @@ export default class Gameplay extends Component{
                      </Provider>
                    </ErrorBoundary> }
 
-  renderBoards({game, player}){ // NOTE: Add "Set Islands" button
+  componentDidMount() {
+    const {islands} = this.props.game[this.props.player]
+    this.setState({unset: !islands || islands.placed ? {} : islands})
+  }
+
+  renderBoards({game, player}){ // NOTE: Add "Set Islands" button w/ channel action
     const opp = (player === "player1") ? "player2" : "player1"
     const my = game[player]
 
@@ -57,19 +61,17 @@ export default class Gameplay extends Component{
   }
 
   renderIslandSet(style = {}){
-    const {game, player} = this.props
-
     let topLeft = 4
 
     return <ErrorBoundary>
              <View key="unset-islands" style={style}>
-               {_.map( this.state.unset, island => {
-                 height = unit(island.bounds.height) + 5 // margin
+               {_.map( _.pairs(this.state.unset), ([type, island]) => {
+                 height = island ? (unit(island.bounds.height) + 5) : 0 // margin
                  topLeft += height
 
                  return <Island key={type}
-                                island={island}
-                                player={player}
+                                type={type}
+                                player={this.props.player}
                                 topLeft={topLeft - height}/> })}
              </View>
            </ErrorBoundary>
