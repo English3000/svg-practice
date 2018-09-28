@@ -53,7 +53,7 @@ export default class Game extends React.Component{
         {message ?
           <Instruction message={message}/> : null}
 
-        {!!(payload && id.length > 0) ?
+        {(payload && id.length > 0) ?
           <Gameplay game={payload} player={id}/> : null}
       </ErrorBoundary>
     )

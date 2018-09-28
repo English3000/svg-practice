@@ -1,7 +1,7 @@
 import React from "react"
 import { Dimensions, PanResponder, Animated } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
-import Consumer from "./Gameplay.js"
+import { Consumer } from "./Gameplay.js"
 import Svg, { Rect } from "react-native-svg"
 import _ from "underscore"
 
@@ -22,7 +22,7 @@ export default class Island extends React.Component{
   render(){
     return <Consumer>
       { ({game, player}) => {
-        let {coordinates, bounds} = game[player][this.props.type]
+        let {coordinates, bounds} = game[player].islands[this.props.type]
 
         return (
           <ErrorBoundary>
@@ -33,7 +33,7 @@ export default class Island extends React.Component{
                   <Rect x={`${unit(coord.col)}`}  width={`${unit(1)}`}
                         y={`${unit(coord.row)}`}  height={`${unit(1)}`}
                         fill="brown"              stroke="black"
-                        key={`${this.props.key}(${coord.row},${coord.col})`}/> )}
+                        key={`${this.props.type}(${coord.row},${coord.col})`}/> )}
               </Svg>
             </Animated.View>
           </ErrorBoundary>
@@ -56,6 +56,7 @@ export default class Island extends React.Component{
         } // Then set_islands can use the `MapSet.disjoint?` logic to approve or deny based on `top_left` + `type`
       }
     })
+    this.forceUpdate()
   }
 
   locate({x, y}){

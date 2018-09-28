@@ -11,14 +11,13 @@ import _ from "underscore"
 export const { Provider, Consumer } = createContext()
 
 export default class Gameplay extends Component{
-  constructor(props) {
-    super(props)
+  constructor(){
+    super()
     this.renderBoards = this.renderBoards.bind(this)
     this.state = {unset: {}}
   }
 
-  render(){ console.log(this.state);
-    return <ErrorBoundary>
+  render(){ return <ErrorBoundary>
                      <Provider value={{game: this.props.game, player: this.props.player}}>
                        <View key="display"
                              style={[{justifyContent: "center"}, Platform.OS === "web" ? styles.row : {}]}>
