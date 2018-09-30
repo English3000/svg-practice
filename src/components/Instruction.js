@@ -24,7 +24,7 @@ function renderInstruction(instruction){
 export default ({message}) =>
   <ErrorBoundary>
     { message.error ?
-       <Text>{message.error}</Text> :
+       <Text>{message.error}</Text> : // replace "_" with " "
        <Text style={custom.instruction}>{renderInstruction(message.instruction)}</Text> }
   </ErrorBoundary>
 

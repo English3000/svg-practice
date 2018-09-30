@@ -6,13 +6,13 @@ import Svg, { Rect } from "react-native-svg"
 import _ from "underscore"
 
 export const { height, width } = Dimensions.get("window")
-const bound = height > width ? (width-0.5) * 0.6 : (height-0.5) * 0.6
+export const bound = height > width ? (width-0.5) * 0.6 : (height-0.5) * 0.6
 export const unit = multiple => bound/10 * multiple
 
 export default class Island extends React.Component{
   constructor(props){
     super(props)        // defaults to {x: 0, y: 0}
-    this.state = { pan: new Animated.ValueXY() }
+    this.state = { pan: new Animated.ValueXY(), onBoard: false }
     this.panResponder = {}
     this.locate = this.locate.bind(this)
 
@@ -44,16 +44,20 @@ export default class Island extends React.Component{
 
   componentDidMount(){
     const {pan} = this.state
+    const {type, updateIslands} = this.props
 
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
       onPanResponderRelease: (event) => {
         const [row, col] = this.locate(pan)
+        let onBoard = (row >= 0 && row <= 9 && col >= 0 && col <= 9)
 
-        if (row >= 0 && row <= 9 && col >= 0 && col <= 9) {
-          // Set top_left to new coord (row + 1, col + 1)
-        } // Then set_islands can use the `MapSet.disjoint?` logic to approve or deny based on `top_left` + `type`
+        if (onBoard !== this.state.onBoard) {
+          this.setState({onBoard})
+          updateIslands(type, {row: row + 1, col: col + 1}, onBoard)
+        }
+        // Then set_islands can use the `MapSet.disjoint?` logic to approve or deny based on `top_left` + `type`
       }
     })
     this.forceUpdate()

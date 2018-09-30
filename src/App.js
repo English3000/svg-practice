@@ -77,14 +77,18 @@ export default class Game extends React.Component{
   joinGame(params){ // not joining on mobile
     const {game, player} = params
     if (game.length > 0 && player.length > 0) {
-      channel(socket, game, player)
-        .join()
+      let gameChannel = channel(socket, game, player)
+      // VERIFY,
+      gameChannel.on( "error", response => this.setState({ message: {error: response.reason} }) )
+      gameChannel.join()
         .receive("ok", payload => {
           const {player1, player2} = payload
           if (player1.name === player) this.setState({ form: false, message: {instruction: player1.stage}, payload, id: "player1" })
           if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
           history.push(`/?game=${game}&player=${player}`)
-      }).receive("error", response => this.setState({ message: {error: response.reason} }))
+      })//.receive("error", response => this.setState({ message: {error: response.reason} }))
+      gameChannel.on( "islands_set", playerData =>
+        this.setState({ payload: merge({}, this.state.payload, {[player]: playerData}) }) )
     }
   }
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.
