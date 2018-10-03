@@ -9,9 +9,9 @@ function renderInstruction(instruction){
     case "ready":
       return "Waiting for other player..."
     case "turn":
-      return "Your turn! Click a coordinate on your opponent's board to attack."
+      return "YOUR TURN: Click on a square to attack."
     case "wait":
-      return "Your opponent attacking..."
+      return "Your opponent is attacking..."
     case "won":
       return "Congrats! You've WON."
     case "lost":
@@ -23,9 +23,10 @@ function renderInstruction(instruction){
 
 export default ({message}) =>
   <ErrorBoundary>
-    { message.error ?
-       <Text>{message.error}</Text> : // replace "_" with " "
-       <Text style={custom.instruction}>{renderInstruction(message.instruction)}</Text> }
+    <Text style={custom.instruction}>
+      {message.error ?
+        "ERROR: " + message.error.replace(/_/, " ") : renderInstruction(message.instruction)}
+    </Text>
   </ErrorBoundary>
 
 const custom = StyleSheet.create({

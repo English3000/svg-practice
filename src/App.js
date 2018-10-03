@@ -24,6 +24,7 @@ export default class Game extends React.Component{
 
   render(){
     const { form, message, payload, id } = this.state
+    console.log(payload);
     return (
       <ErrorBoundary>
         {form ? [
@@ -78,7 +79,6 @@ export default class Game extends React.Component{
     const {game, player} = params
     if (game.length > 0 && player.length > 0) {
       let gameChannel = channel(socket, game, player)
-      // VERIFY,
       gameChannel.on( "error", response => this.setState({ message: {error: response.reason} }) )
       gameChannel.join()
         .receive("ok", payload => {
@@ -86,9 +86,9 @@ export default class Game extends React.Component{
           if (player1.name === player) this.setState({ form: false, message: {instruction: player1.stage}, payload, id: "player1" })
           if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
           history.push(`/?game=${game}&player=${player}`)
-      })//.receive("error", response => this.setState({ message: {error: response.reason} }))
+      })
       gameChannel.on( "islands_set", playerData =>
-        this.setState({ payload: merge({}, this.state.payload, {[player]: playerData}) }) )
+        this.setState({ payload: merge({}, this.state.payload, {[playerData.key]: playerData}), message: {instruction: playerData.stage} }) )
     }
   }
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.

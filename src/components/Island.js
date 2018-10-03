@@ -12,11 +12,9 @@ export const unit = multiple => bound/10 * multiple
 export default class Island extends React.Component{
   constructor(props){
     super(props)        // defaults to {x: 0, y: 0}
-    this.state = { pan: new Animated.ValueXY(), onBoard: false }
+    this.state = { pan: new Animated.ValueXY(), onBoard: -1 }
     this.panResponder = {}
     this.locate = this.locate.bind(this)
-
-    console.log("constructing", props.type);
   }
 
   render(){
@@ -26,7 +24,7 @@ export default class Island extends React.Component{
 
         return (
           <ErrorBoundary>
-            <Animated.View style={[{transform: this.state.pan.getTranslateTransform(), margin: 5}, this.props.style ? this.props.style : {}]}
+            <Animated.View style={[{transform: this.state.pan.getTranslateTransform(), marginLeft: 5, marginBottom: 10}, this.props.style ? this.props.style : {}]}
                            {...this.panResponder.panHandlers}>
               <Svg width={unit(bounds.width)} height={unit(bounds.height)}>
                 {_.map( coordinates, coord =>
@@ -51,13 +49,10 @@ export default class Island extends React.Component{
       onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
       onPanResponderRelease: (event) => {
         const [row, col] = this.locate(pan)
-        let onBoard = (row >= 0 && row <= 9 && col >= 0 && col <= 9)
+        let onBoard = (row >= 0 && row <= 9 && col >= 0 && col <= 9) ? 1 : -1
 
-        if (onBoard !== this.state.onBoard) {
-          this.setState({onBoard})
-          updateIslands(type, {row: row + 1, col: col + 1}, onBoard)
-        }
-        // Then set_islands can use the `MapSet.disjoint?` logic to approve or deny based on `top_left` + `type`
+        if (onBoard !== this.state.onBoard) this.setState({onBoard})
+        updateIslands(type, {row: row + 1, col: col + 1}, (onBoard !== this.state.onBoard) ? onBoard : 0)
       }
     })
     this.forceUpdate()
@@ -72,8 +67,7 @@ export default class Island extends React.Component{
     } else if (this.props.player === "player2") {
       col = Math.round(9 + x._value / unit(1) + 2) // buffer to left-edge of board
     }
-    console.log("row:", row);
-    console.log("column:", col);
+
     return [row, col]
   }
 }

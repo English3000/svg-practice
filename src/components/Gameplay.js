@@ -14,7 +14,7 @@ const custom = StyleSheet.create({
   web: {position: "absolute", zIndex: 1},
 
   button: { width: bound,
-            backgroundColor: "blue",
+            backgroundColor: "limegreen",
             marginTop: 18,
             borderRadius: 15,
             padding: 5,
@@ -41,7 +41,7 @@ export default class Gameplay extends Component{
 
                  {this.state.onBoard === 5 && game[player].stage === "joined" ?
                    <TouchableOpacity style={custom.button}
-                                     onPress={() => set_islands(socket.channels[0], player, this.state)}>
+                                     onPress={() => set_islands(socket.channels[0], {player, islands: this.state})}>
                      <Text style={custom.buttonText}>SET ISLANDS</Text>
                    </TouchableOpacity> : null}
                </View>
@@ -53,39 +53,42 @@ export default class Gameplay extends Component{
     const opp = (player === "player1") ? "player2" : "player1"
     const my = game[player]
 
-    if (Platform.OS !== "web") { // Show player2 board below
+    if (Platform.OS !== "web") { // Show opponent board below
       return my.stage === "turn" ? // handle game end; need island hits
                <Board id={player}/> :
 
              [ <Board id={opp} key="set-islands"/> ,
-               this.renderIslandSet(styles.row) ]
+               my.stage === "joined" ?
+                 this.renderIslandSet(styles.row) : null ]
     } else { // web
       return [
         (player === "player1") ?
           <View key="me" style={styles.row}>
-            {this.renderIslandSet([custom.web, {marginLeft: unit(-2.25)}])}
-            <Board id={player} key="opp"/>
+            {my.stage === "joined" ?
+              this.renderIslandSet([custom.web, {marginLeft: unit(-2.25)}]) : null}
             <Board id={opp}/>
+            <Board id={player} key="opp"/>
           </View> : null,
 
-          (player === "player2") ?
-            <View key="me" style={styles.row}>
-              <Board id={opp}/>
-              <Board id={player} key="opp"/>
-              {this.renderIslandSet([custom.web, {marginLeft: unit(12)}])}
-            </View> : null ]
+        (player === "player2") ?
+          <View key="me" style={styles.row}>
+            <Board id={player} key="opp"/>
+            <Board id={opp}/>
+            {my.stage === "joined" ?
+              this.renderIslandSet([custom.web, {marginLeft: unit(24)}]) : null}
+          </View> : null ]
     }
   }
 
   renderIslandSet(style = {}){
-    let topLeft = 4
+    let topLeft = 0
 
     return <ErrorBoundary>
              <View key="unset-islands" style={style}>
                {_.map( _.pairs(this.state), ([type, island]) => {
-                 if (type === "placed" || type === "onBoard") return null
+                 if (type === "onBoard") return null
 
-                 height = island ? (unit(island.bounds.height) + 5) : 0 // margin
+                 height = unit(island.bounds.height) + 10  // marginBottom
                  topLeft += height
 
                  return <Island key={type}
@@ -99,6 +102,6 @@ export default class Gameplay extends Component{
 
   updateIslands(type, top_left, onBoard){
     let island = merge({}, this.state[type], {bounds: {top_left}})
-    this.setState({[type]: island, onBoard: this.state.onBoard + (onBoard ? 1 : -1)})
+    this.setState({[type]: island, onBoard: this.state.onBoard + onBoard})
   }
 }

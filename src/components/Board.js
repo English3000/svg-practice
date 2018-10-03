@@ -31,15 +31,15 @@ export default ({id}) =>
           _.each( island.coordinates, coord =>
             board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
                                                     <TouchableOpacity style={[custom.tile, {backgroundColor: "brown"}]}/>
-                                                  </ErrorBoundary> )) }
-      _.each( attacker.guesses.hits, coord =>
-        board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
-                                                <TouchableOpacity style={[custom.tile, {backgroundColor: "green"}]}/>
-                                              </ErrorBoundary> )
-      _.each( attacker.guesses.misses, coord =>
-        board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
-                                                <TouchableOpacity style={[custom.tile, {backgroundColor: "gray"}]}/>
-                                              </ErrorBoundary> )
+                                                  </ErrorBoundary> ))
+        _.each( attacker.guesses.hits, coord =>
+          board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
+                                                  <TouchableOpacity style={[custom.tile, {backgroundColor: "green"}]}/>
+                                                </ErrorBoundary> )
+        _.each( attacker.guesses.misses, coord =>
+          board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
+                                                  <TouchableOpacity style={[custom.tile, {backgroundColor: "gray"}]}/>
+                                                </ErrorBoundary> ) }
 
       return <ErrorBoundary>
                <View style={{marginHorizontal: unit(1), borderWidth: 0.5}}>
