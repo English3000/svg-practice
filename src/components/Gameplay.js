@@ -92,7 +92,7 @@ export default class Gameplay extends Component{
                  topLeft += height
 
                  return <Island key={type}
-                                type={type}
+                                island={island}
                                 player={this.props.player}
                                 topLeft={topLeft - height}
                                 updateIslands={this.updateIslands}/> })}
