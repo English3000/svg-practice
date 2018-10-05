@@ -38,8 +38,10 @@ export default class Island extends React.Component{
     const {x, y} = this.state.pan
     const {island, updateIslands} = this.props
 
-    this.panResponder = PanResponder.create({// NOTE: pop-back bug on 2nd click
+    this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => { this.state.pan.setOffset({x: x._value, y: y._value})
+                                   this.state.pan.setValue({x: 0, y: 0}) },
       onPanResponderMove: Animated.event([null, {dx: x, dy: y}]),
       onPanResponderRelease: (event) => {
         const {height, width} = island.bounds
@@ -48,6 +50,8 @@ export default class Island extends React.Component{
 
         if (onBoard !== this.state.onBoard) this.setState({onBoard})
         updateIslands(island.type, {row: row + 1, col: col + 1}, (onBoard !== this.state.onBoard) ? onBoard : 0)
+
+        this.state.pan.flattenOffset()
       }
     })
     this.forceUpdate()
@@ -57,8 +61,8 @@ export default class Island extends React.Component{
     const {topLeft, player} = this.props
     let marginLeft = (player === "player1") ? -3 : 11
 
-    let row = (topLeft + y._value) / unit(1)
-    let col = x._value / unit(1) + marginLeft
+    let row = (topLeft + y._value + y._offset) / unit(1)
+    let col = (x._value + x._offset) / unit(1) + marginLeft
 
     return [Math.round(row), Math.round(col)]
   }
