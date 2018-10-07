@@ -89,6 +89,13 @@ export default class Game extends React.Component{
       })
       gameChannel.on( "islands_set", playerData =>
         this.setState({ payload: merge({}, this.state.payload, {[playerData.key]: playerData}), message: {instruction: playerData.stage} }) )
+      gameChannel.on( "coordinate_guessed", ({player_key}) => {
+        let opp_key = (player_key === "player1") ? "player2" : "player1"
+        let instruction = (player_key === this.state.id) ? "wait" : "turn"
+        this.setState({ payload: merge( {}, this.state.payload,
+                          {[player_key]: {stage: "wait"}, [opp_key]: {stage: "turn"}} ),
+                        message: {instruction} })
+      })
     }
   }
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.

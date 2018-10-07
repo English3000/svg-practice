@@ -40,6 +40,7 @@ export default class Island extends React.Component{
 
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      // via: https://mindthecode.com/getting-started-with-the-panresponder-in-react-native/
       onPanResponderGrant: () => { this.state.pan.setOffset({x: x._value, y: y._value})
                                    this.state.pan.setValue({x: 0, y: 0}) },
       onPanResponderMove: Animated.event([null, {dx: x, dy: y}]),

@@ -53,7 +53,7 @@ export default class Gameplay extends Component{
     const opp = (player === "player1") ? "player2" : "player1"
     const my = game[player]
 
-    if (Platform.OS !== "web") { // Show opponent board below
+    if (Platform.OS !== "web") { // TODO: Show opponent board below
       return my.stage === "turn" ? // handle game end; need island hits
                <Board id={player}/> :
 

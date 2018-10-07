@@ -3,8 +3,8 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { styles } from "../App.js"
 import { Consumer } from "./Gameplay.js"
 import ErrorBoundary from "./ErrorBoundary.js"
-import Island, { unit } from "./Island.js"
-import socket, { guess_coordinate } from "../socket.js"
+import Tile from "./Tile.js"
+import { unit } from "./Island.js"
 import _ from "underscore"
 
 export default ({id}) =>
@@ -16,18 +16,16 @@ export default ({id}) =>
       const owner = (id === "player1") ? game["player2"] : game["player1"]
 
       let board = _.map(_.range(10), row =>
-                    _.map(_.range(10), col =>
-                      <ErrorBoundary key={`${row},${col}`}>
-                        <TouchableOpacity style={[custom.tile, {backgroundColor: "blue"}]}
-                                          onPress={() => attacker.stage === "turn" &&
-                                                         attacker.key === player ?
-                                                           guess_coordinate(socket.channels[0], id, row, col) : null}/>
-                      </ErrorBoundary>
-                    )
+                    _.map( _.range(10), col => <Tile key={`${row},${col}`}
+                                                     stage={game[player].stage}
+                                                     id={attacker.key}
+                                                     row={row}
+                                                     col={col}
+                                                     player={id}/> )
                   )
 
-      if (owner.stage !== "joined" && owner.islands) {
-        _.each(Object.values(owner.islands), island =>
+      if (owner.stage !== "joined" && owner.islands) { // BUG: on refresh, only shows opponent's moves
+        _.each(Object.values(owner.islands), island => // BUG: on attack, island is not updated
           _.each( island.coordinates, coord =>
             board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
                                                     <TouchableOpacity style={[custom.tile, {backgroundColor: "brown"}]}/>
@@ -38,7 +36,7 @@ export default ({id}) =>
                                                 </ErrorBoundary> )
         _.each( attacker.guesses.misses, coord =>
           board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`${coord.row},${coord.col}`}>
-                                                  <TouchableOpacity style={[custom.tile, {backgroundColor: "gray"}]}/>
+                                                  <TouchableOpacity style={[custom.tile, {backgroundColor: "darkblue"}]}/>
                                                 </ErrorBoundary> ) }
 
       return <ErrorBoundary>
