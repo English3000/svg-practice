@@ -24,7 +24,6 @@ export default class Game extends React.Component{
 
   render(){
     const { form, message, payload, id } = this.state
-    console.log(payload);
     return (
       <ErrorBoundary>
         {form ? [
@@ -54,7 +53,7 @@ export default class Game extends React.Component{
         {message ?
           <Instruction message={message}/> : null}
 
-        {(payload && id.length > 0) ?
+        {(payload && id.length > 0 && message && !["won", "lost"].includes(message.instruction)) ?
           <Gameplay game={payload} player={id}/> : null}
       </ErrorBoundary>
     )
@@ -90,11 +89,8 @@ export default class Game extends React.Component{
       gameChannel.on( "islands_set", playerData =>
         this.setState({ payload: merge({}, this.state.payload, {[playerData.key]: playerData}), message: {instruction: playerData.stage} }) )
       gameChannel.on( "coordinate_guessed", ({player_key}) => {
-        let opp_key = (player_key === "player1") ? "player2" : "player1"
         let instruction = (player_key === this.state.id) ? "wait" : "turn"
-        this.setState({ payload: merge( {}, this.state.payload,
-                          {[player_key]: {stage: "wait"}, [opp_key]: {stage: "turn"}} ),
-                        message: {instruction} })
+        this.setState({ message: {instruction} })
       })
     }
   }
