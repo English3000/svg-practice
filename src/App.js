@@ -23,6 +23,7 @@ export default class Game extends React.Component{
   }
 
   render(){
+    console.log("render app");
     const { form, message, payload, id } = this.state
     return (
       <ErrorBoundary>

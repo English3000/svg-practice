@@ -1,4 +1,4 @@
-import React, { Component, createContext } from "react"
+import React from "react"
 import { StyleSheet, Platform, View, TouchableOpacity, Text } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Board from "./Board.js"
@@ -7,8 +7,6 @@ import { styles } from "../App.js"
 import socket, { set_islands } from "../socket.js"
 import merge from "lodash.merge"
 import _ from "underscore"
-
-export const { Provider, Consumer } = createContext()
 
 const custom = StyleSheet.create({
   web: {position: "absolute", zIndex: 1},
@@ -23,7 +21,7 @@ const custom = StyleSheet.create({
   buttonText: {textAlign: "center", fontSize: 16.5, fontStyle: "italic"}
 })
 
-export default class Gameplay extends Component{
+export default class Gameplay extends React.Component{
   constructor(props){
     super(props)
     this.renderBoards = this.renderBoards.bind(this)
@@ -34,18 +32,16 @@ export default class Gameplay extends Component{
   render(){
     const {game, player} = this.props
     return <ErrorBoundary>
-             <Provider value={{game, player}}>
-               <View key="display"
-                     style={{alignItems: "center"}}>
-                 {this.renderBoards(this.props)}
+             <View key="display"
+                   style={{alignItems: "center"}}>
+               {this.renderBoards(this.props)}
 
-                 {this.state.onBoard === 5 && game[player].stage === "joined" ?
-                   <TouchableOpacity style={custom.button}
-                                     onPress={() => set_islands(socket.channels[0], {player, islands: this.state})}>
-                     <Text style={custom.buttonText}>SET ISLANDS</Text>
-                   </TouchableOpacity> : null}
-               </View>
-             </Provider>
+               {this.state.onBoard === 5 && game[player].stage === "joined" ?
+                 <TouchableOpacity style={custom.button}
+                                   onPress={() => set_islands(socket.channels[0], {player, islands: this.state})}>
+                   <Text style={custom.buttonText}>SET ISLANDS</Text>
+                 </TouchableOpacity> : null}
+             </View>
            </ErrorBoundary>
   }
 
@@ -55,9 +51,9 @@ export default class Gameplay extends Component{
 
     if (Platform.OS !== "web") { // TODO: Show opponent board below
       return my.stage === "turn" ? // handle game end; need island hits
-               <Board id={player}/> :
+               <Board game={game} player={player}/> :
 
-             [ <Board id={opp} key="set-islands"/> ,
+             [ <Board game={game} player={opp} key="set-islands"/> ,
                my.stage === "joined" ?
                  this.renderIslandSet(styles.row) : null ]
     } else { // web
@@ -66,14 +62,14 @@ export default class Gameplay extends Component{
           <View key="me" style={styles.row}>
             {my.stage === "joined" ?
               this.renderIslandSet([custom.web, {marginLeft: unit(-2.25)}]) : null}
-            <Board id={opp}/>
-            <Board id={player} key="opp"/>
+            <Board game={game} player={opp}/>
+            <Board game={game} player={player} key="opp"/>
           </View> : null,
 
         (player === "player2") ?
           <View key="me" style={styles.row}>
-            <Board id={player} key="opp"/>
-            <Board id={opp}/>
+            <Board game={game} player={player} key="opp"/>
+            <Board game={game} player={opp}/>
             {my.stage === "joined" ?
               this.renderIslandSet([custom.web, {marginLeft: unit(24)}]) : null}
           </View> : null ]
