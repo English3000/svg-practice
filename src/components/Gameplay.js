@@ -51,9 +51,9 @@ export default class Gameplay extends React.Component{
 
     if (Platform.OS !== "web") { // TODO: Show opponent board below
       return my.stage === "turn" ? // handle game end; need island hits
-               <Board game={game} player={player}/> :
+               <Board game={game} attacker={player} player={player}/> :
 
-             [ <Board game={game} player={opp} key="set-islands"/> ,
+             [ <Board game={game} attacker={opp} player={player} key="set-islands"/> ,
                my.stage === "joined" ?
                  this.renderIslandSet(styles.row) : null ]
     } else { // web
@@ -62,21 +62,21 @@ export default class Gameplay extends React.Component{
           <View key="me" style={styles.row}>
             {my.stage === "joined" ?
               this.renderIslandSet([custom.web, {marginLeft: unit(-2.25)}]) : null}
-            <Board game={game} player={opp}/>
-            <Board game={game} player={player} key="opp"/>
+            <Board game={game} attacker={opp} player={player}/>
+            <Board game={game} attacker={player} player={player} key="opp"/>
           </View> : null,
 
         (player === "player2") ?
           <View key="me" style={styles.row}>
-            <Board game={game} player={player} key="opp"/>
-            <Board game={game} player={opp}/>
+            <Board game={game} attacker={player} player={player} key="opp"/>
+            <Board game={game} attacker={opp} player={player}/>
             {my.stage === "joined" ?
               this.renderIslandSet([custom.web, {marginLeft: unit(24)}]) : null}
           </View> : null ]
     }
   }
 
-  renderIslandSet(style = {}){
+  renderIslandSet(style = {}){ // NEW BUG'S
     let topLeft = 0
 
     return <ErrorBoundary>

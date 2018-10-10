@@ -6,7 +6,7 @@ import socket, { guess_coordinate } from "../socket.js"
 export default class Tile extends React.Component{
   constructor(props){
     super(props)
-    this.state = {backgroundColor: props.isIsland ? "brown" : "blue"}
+    this.state = {backgroundColor: props.isIsland ? "brown" : "blue", isTurn: props.isTurn}
   }
 
   render(){
@@ -19,11 +19,18 @@ export default class Tile extends React.Component{
            </ErrorBoundary>
   }
 
-  componentDidMount(){ // NOTE: Refactor away `+1` offsets (to reduce complexity)
+  componentDidMount(){ // NOTE: Refactor away `+1` offsets (to reduce complexity), then solve island hit bug (if still exists)
+    const {attacker, player} = this.props
     socket.channels[0].on("coordinate_guessed", ({player_key, row, col, hit}) => {
-      if (this.props.row === row - 1 && this.props.col === col - 1) console.log(this.props.attacker, player_key, row, col, hit);
-      if (this.props.attacker === player_key && this.props.row === row - 1 && this.props.col === col - 1)
-        hit ? this.setState({backgroundColor: "green"}) : this.setState({backgroundColor: "darkblue"})
+      if (hit) {
+        if (player === player_key && this.props.row === row - 1 && this.props.col === col - 1) {
+          this.setState({backgroundColor: "green"})
+        } else if (attacker === player_key && this.props.row === row && this.props.col === col) {
+          this.setState({backgroundColor: "green"})
+        }
+      } else if (attacker === player_key && this.props.row === row - 1 && this.props.col === col - 1) {
+        this.setState({backgroundColor: "darkblue"})
+      }
     })
   }
 }

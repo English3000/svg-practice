@@ -9,17 +9,21 @@ import _ from "underscore"
 export default class Board extends React.Component{
   constructor(props){
     super(props)
+
+    const cursor = props.game[props.attacker].islands ? "pointer" : "default"
     this.state = { board: _.map(_.range(10), row =>
-                            _.map( _.range(10), col => <Tile key={`tile${row},${col}`}
-                                                             style={[custom.tile, {cursor: props.game[props.player].islands ? "pointer" : "default"}]}
-                                                             row={row}
-                                                             col={col}
-                                                             attacker={props.player}/> )),
+                            _.map( _.range(10), col =>
+                              <Tile key={`tile${row},${col}`}
+                                    style={[custom.tile, {cursor}]}
+                                    row={row}
+                                    col={col}
+                                    attacker={props.attacker}
+                                    player={props.player}/> )),
                    mounted: false }
   }
 
   render(){
-    const {game, player} = this.props
+    console.log("render board");
     return this.state.mounted ?
       <ErrorBoundary>
         <View style={{marginHorizontal: unit(1), borderWidth: 0.5}}>
@@ -31,25 +35,26 @@ export default class Board extends React.Component{
 
   componentDidMount(){
     let {board} = this.state,
-        {game, player} = this.props
+        {game, attacker, player} = this.props
 
-    const attacker = game[player],
-          owner = (player === "player1") ? game["player2"] : game["player1"]
+    const enemy = game[attacker],
+          owner = (attacker === "player1") ? game["player2"] : game["player1"]
 
-    if (owner.islands) { // BUG: on opp attack, island is not updated
+    if (owner.islands && owner.stage !== "joined") {
       _.each(Object.values(owner.islands), island =>
         _.each( island.coordinates, coord =>
           board[coord.row - 1][coord.col - 1] = <Tile key={`island${coord.row},${coord.col}`}
                                                       style={[custom.tile, {cursor: "default"}]}
                                                       row={coord.row}
                                                       col={coord.col}
-                                                      attacker={player}
+                                                      attacker={attacker}
+                                                      player={player}
                                                       isIsland={true}/> )) }
-    _.each( attacker.guesses.hits, coord =>
+    _.each( enemy.guesses.hits, coord =>
       board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`hit${coord.row},${coord.col}`}>
                                               <TouchableOpacity style={[custom.tile, {backgroundColor: "green", cursor: "default"}]}/>
                                             </ErrorBoundary> )
-    _.each( attacker.guesses.misses, coord =>
+    _.each( enemy.guesses.misses, coord =>
       board[coord.row - 1][coord.col - 1] = <ErrorBoundary key={`miss${coord.row},${coord.col}`}>
                                               <TouchableOpacity style={[custom.tile, {backgroundColor: "darkblue", cursor: "default"}]}/>
                                             </ErrorBoundary> )
