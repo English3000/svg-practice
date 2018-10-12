@@ -35,8 +35,8 @@ export default class Island extends React.Component{
   }
 
   componentDidMount(){
-    const {x, y} = this.state.pan
-    const {island, updateIslands} = this.props
+    const {x, y} = this.state.pan,
+          {island, updateIslands} = this.props
 
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -45,12 +45,12 @@ export default class Island extends React.Component{
                                    this.state.pan.setValue({x: 0, y: 0}) },
       onPanResponderMove: Animated.event([null, {dx: x, dy: y}]),
       onPanResponderRelease: (event) => {
-        const {height, width} = island.bounds
-        const [row, col] = this.locate(x, y)
-        let onBoard = (row >= 0 && row + height <= 10 && col >= 0 && col + width <= 10) ? 1 : -1
+        const {height, width} = island.bounds,
+          [row, col] = this.locate(x, y),
+          onBoard = (row >= 0 && row + height <= 10 && col >= 0 && col + width <= 10) ? 1 : -1
 
         if (onBoard !== this.state.onBoard) this.setState({onBoard})
-        updateIslands(island.type, {row: row + 1, col: col + 1}, (onBoard !== this.state.onBoard) ? onBoard : 0)
+        updateIslands(island.type, {row, col}, (onBoard !== this.state.onBoard) ? onBoard : 0)
 
         this.state.pan.flattenOffset()
       }
@@ -59,11 +59,11 @@ export default class Island extends React.Component{
   }
 
   locate(x, y){
-    const {topLeft, player} = this.props
-    let marginLeft = (player === "player1") ? -3 : 11
+    const {topLeft, player} = this.props,
 
-    let row = (topLeft + y._value + y._offset) / unit(1)
-    let col = (x._value + x._offset) / unit(1) + marginLeft
+          marginLeft = (player === "player1") ? -3 : 11,
+          row = (topLeft + y._value + y._offset) / unit(1),
+          col = (x._value + x._offset) / unit(1) + marginLeft
 
     return [Math.round(row), Math.round(col)]
   }

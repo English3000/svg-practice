@@ -15,21 +15,15 @@ export default class Tile extends React.Component{
     return <ErrorBoundary>
              <TouchableOpacity style={[style, {backgroundColor}]}
                                onPress={() => ["blue", "brown"].includes(backgroundColor) ?
-                                                guess_coordinate(socket.channels[0], attacker, row + 1, col + 1) : null}/>
+                                                guess_coordinate(socket.channels[0], attacker, row, col) : null}/>
            </ErrorBoundary>
   }
 
-  componentDidMount(){ // NOTE: Refactor away `+1` offsets (to reduce complexity), then solve island hit bug (if still exists)
+  componentDidMount(){
     const {attacker, player} = this.props
     socket.channels[0].on("coordinate_guessed", ({player_key, row, col, hit}) => {
-      if (hit) {
-        if (player === player_key && this.props.row === row - 1 && this.props.col === col - 1) {
-          this.setState({backgroundColor: "green"})
-        } else if (attacker === player_key && this.props.row === row && this.props.col === col) {
-          this.setState({backgroundColor: "green"})
-        }
-      } else if (attacker === player_key && this.props.row === row - 1 && this.props.col === col - 1) {
-        this.setState({backgroundColor: "darkblue"})
+      if (attacker === player_key && this.props.row === row && this.props.col === col) {
+        hit ? this.setState({backgroundColor: "green"}) : this.setState({backgroundColor: "darkblue"})
       }
     })
   }

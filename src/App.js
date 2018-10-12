@@ -23,8 +23,8 @@ export default class Game extends React.Component{
   }
 
   render(){
-    console.log("render app");
     const { form, message, payload, id } = this.state
+    console.log("render app", payload);
     return (
       <ErrorBoundary>
         {form ? [
@@ -93,6 +93,7 @@ export default class Game extends React.Component{
         let instruction = (player_key === this.state.id) ? "wait" : "turn"
         this.setState({ message: {instruction} })
       })
+      // handle "game_status" event
     }
   }
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.

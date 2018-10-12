@@ -46,11 +46,11 @@ export default class Gameplay extends React.Component{
   }
 
   renderBoards({game, player}){
-    const opp = (player === "player1") ? "player2" : "player1"
-    const my = game[player]
+    const opp = (player === "player1") ? "player2" : "player1",
+          my = game[player]
 
     if (Platform.OS !== "web") { // TODO: Show opponent board below
-      return my.stage === "turn" ? // handle game end; need island hits
+      return my.stage === "turn" ?
                <Board game={game} attacker={player} player={player}/> :
 
              [ <Board game={game} attacker={opp} player={player} key="set-islands"/> ,
@@ -76,7 +76,7 @@ export default class Gameplay extends React.Component{
     }
   }
 
-  renderIslandSet(style = {}){ // NEW BUG'S
+  renderIslandSet(style = {}){
     let topLeft = 0
 
     return <ErrorBoundary>
