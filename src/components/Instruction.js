@@ -1,6 +1,8 @@
 import React from "react"
-import { StyleSheet, Text } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
+import { styles } from "../App.js"
+import socket, { history } from "../socket.js"
 // coupled to IslandsEngine.Game.Stage atoms
 function renderInstruction(instruction){
   switch (instruction) {
@@ -23,10 +25,22 @@ function renderInstruction(instruction){
 
 export default ({message}) =>
   <ErrorBoundary>
-    <Text style={custom.instruction}>
-      {message.error ?
-        "ERROR: " + message.error.replace(/_/, " ") : renderInstruction(message.instruction)}
-    </Text>
+    <View style={[styles.row, {justifyContent: "center"}]}>
+      <Text style={custom.instruction}>
+        {message.error ?
+          "ERROR: " + message.error.replace(/_/, " ") : renderInstruction(message.instruction)}
+      </Text>
+
+      <TouchableOpacity onPress={() => socket.channels[0].leave() // BUG: no channel...
+                                         .receive( "ok", () => history.push("/") )}>
+        <Text>EXIT</Text>
+      </TouchableOpacity>
+
+      {["won", "lost"].includes(message.instruction) ?
+        <TouchableOpacity>
+          <Text>REMATCH</Text>
+        </TouchableOpacity> : null}
+    </View>
   </ErrorBoundary>
 
 const custom = StyleSheet.create({

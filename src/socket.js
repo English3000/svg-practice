@@ -15,8 +15,3 @@ export const set_islands = (channel, player, islands) =>
 
 export const guess_coordinate = (channel, player, row, col) =>
   channel.push("guess_coordinate", {player, row, col})
-
-export const exit_game = (channel) =>
-  channel.exit()
-         .receive("ok",    response => console.log("Exited channel",         response))
-         .receive("error", response => console.log("Failed to exit channel", response))

@@ -24,7 +24,10 @@ export default class Tile extends React.Component{
     const {attacker, player} = this.props
     socket.channels[0].on("coordinate_guessed", ({player_key, row, col, hit}) => {
       if (attacker === player_key && this.props.row === row && this.props.col === col) {
-        hit ? this.setState({backgroundColor: "green"}) : this.setState({backgroundColor: "darkblue"})
+        switch (hit) {
+          case "hit":  return this.setState({backgroundColor: "green"})
+          case "miss": return this.setState({backgroundColor: "darkblue"})
+        }
       }
     })
   }

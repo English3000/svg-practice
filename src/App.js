@@ -3,7 +3,7 @@ import { StyleSheet, Platform, View, TextInput, Button } from "react-native"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
 import Gameplay from "./components/Gameplay.js"
-import socket, { history, channel } from "./socket.js"
+import socket, { channel, history } from "./socket.js"
 import queryString from "query-string"
 import merge from "lodash.merge"
 // import Loadable from "react-loadable"                                        comment prepends value to webpack IO
@@ -90,10 +90,15 @@ export default class Game extends React.Component{
       gameChannel.on( "islands_set", playerData =>
         this.setState({ payload: merge({}, this.state.payload, {[playerData.key]: playerData}), message: {instruction: playerData.stage} }) )
       gameChannel.on( "coordinate_guessed", ({player_key}) => {
-        let instruction = (player_key === this.state.id) ? "wait" : "turn"
-        this.setState({ message: {instruction} })
+        const instruction = (player_key === this.state.id) ? "wait" : "turn"
+        this.setStat+e({ message: {instruction} })
       })
-      // handle "game_status" event
+      gameChannel.on( "game_status", ({won, winner}) => {
+        if (won) {
+          const instruction = winner ? "won" : "lost"
+          this.setState({ message: {instruction}, payload: null })
+        }
+      })
     }
   }
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.
