@@ -10,12 +10,13 @@ export default class Tile extends React.Component{
   }
 
   render(){
-    const {attacker, row, col, isIsland, style} = this.props,
+    const {attacker, player, row, col, isIsland, style} = this.props,
           {backgroundColor} = this.state
     return <ErrorBoundary>
              <TouchableOpacity style={[style, {backgroundColor}]}
-                               onPress={() => ["blue", "brown"].includes(backgroundColor) ?
-                                                guess_coordinate(socket.channels[0], attacker, row, col) : null}/>
+                               onPress={() =>
+                                 ["blue", "brown"].includes(backgroundColor) && attacker === player ?
+                                   guess_coordinate(socket.channels[0], attacker, row, col) : null}/>
            </ErrorBoundary>
   }
 
