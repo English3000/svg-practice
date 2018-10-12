@@ -33,7 +33,7 @@ export default class Game extends React.Component{
                        placeholder="game"
                        style={{width: "50%"}}
                        value={form.game}
-                       onKeyPress={event => form.complete && event.keyCode === 13 ? // onEnter
+                       onKeyPress={event => form.complete && event.charCode === 13 ? // onEnter
                                               this.joinGame(form) : null}
                        autoFocus/>
 
@@ -41,7 +41,7 @@ export default class Game extends React.Component{
                        placeholder="player"
                        style={{width: "50%"}}
                        value={form.player}
-                       onKeyPress={event => form.complete && event.keyCode === 13 ? // onEnter
+                       onKeyPress={event => form.complete && event.charCode === 13 ? // onEnter
                                               this.joinGame(form) : null}/>
           </View>,
 
