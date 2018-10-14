@@ -1,13 +1,14 @@
 import React from "react"
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, Text } from "react-native"
 import ErrorBoundary from "./ErrorBoundary.js"
 import { styles } from "../App.js"
-import socket, { history } from "../socket.js"
 // coupled to IslandsEngine.Game.Stage atoms
-function renderInstruction(instruction){
+function renderInstruction(instruction, opponent){
   switch (instruction) {
     case "joined":
       return "Drag your islands onto the board!"
+    case "left":
+      return `Opponent ${opponent} left game.`
     case "ready":
       return "Waiting for other player..."
     case "turn":
@@ -19,28 +20,17 @@ function renderInstruction(instruction){
     case "lost":
       return "Your opponent has won... Better luck next game!"
     default:
-      return null
+      return instruction
   }
 }
 
-export default ({message}) =>
+export default ({message, opponent}) =>
   <ErrorBoundary>
-    <View style={[styles.row, {justifyContent: "center"}]}>
-      <Text style={custom.instruction}>
-        {message.error ?
-          "ERROR: " + message.error.replace(/_/, " ") : renderInstruction(message.instruction)}
-      </Text>
-
-      <TouchableOpacity onPress={() => socket.channels[0].leave() // BUG: no channel...
-                                         .receive( "ok", () => history.push("/") )}>
-        <Text>EXIT</Text>
-      </TouchableOpacity>
-
-      {["won", "lost"].includes(message.instruction) ?
-        <TouchableOpacity>
-          <Text>REMATCH</Text>
-        </TouchableOpacity> : null}
-    </View>
+    <Text style={custom.instruction}>
+      {message.error ?
+        `ERROR: ${message.error.replace(/_/, " ")}.` :
+        renderInstruction(message.instruction, opponent)}
+    </Text>
   </ErrorBoundary>
 
 const custom = StyleSheet.create({

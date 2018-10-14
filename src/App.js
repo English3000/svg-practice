@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, Platform, View, TextInput, Button } from "react-native"
+import { StyleSheet, Platform, View, TextInput, Button, TouchableOpacity, Text } from "react-native"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
 import Gameplay from "./components/Gameplay.js"
@@ -14,12 +14,13 @@ export const styles = StyleSheet.create({
   row: {flexDirection: "row"}
 })
 
+const INITIAL_STATE = { form: {game: "", player: "", complete: false},
+                        payload: null, id: null, message: null }
+
 export default class Game extends React.Component{
   constructor(){
     super()
-    this.state = history.location.search.length > 1 ?
-                  { form: false } :
-                  { form: {game: "", player: "", complete: false} }
+    this.state = history.location.search.length > 1 ? { form: false } : INITIAL_STATE
   }
 
   render(){
@@ -52,7 +53,21 @@ export default class Game extends React.Component{
         ] : null}
 
         {message ?
-          <Instruction message={message}/> : null}
+          <View style={[styles.row, {justifyContent: "center"}]}>
+            <Instruction message={message} opponent={this.opponent()}/>
+
+            <TouchableOpacity key="exit"
+                              onPress={() => { socket.channels[0].leave()
+                                               history.push("/")
+                                               this.setState(INITIAL_STATE) }}>
+              <Text>EXIT</Text>
+            </TouchableOpacity>
+
+            {["won", "lost"].includes(message.instruction) ?
+              <TouchableOpacity key="rematch">
+                <Text>REMATCH</Text>
+              </TouchableOpacity> : null}
+          </View> : null}
 
         {(payload && id.length > 0 && message && !["won", "lost"].includes(message.instruction)) ?
           <Gameplay game={payload} player={id}/> : null}
@@ -79,27 +94,32 @@ export default class Game extends React.Component{
     const {game, player} = params
     if (game.length > 0 && player.length > 0) {
       let gameChannel = channel(socket, game, player)
-      gameChannel.on( "error", response => this.setState({ message: {error: response.reason} }) )
+      gameChannel.on( "error", ({reason}) => this.setState({ message: {error: reason} }) )
       gameChannel.join()
-        .receive("ok", payload => {
+        .receive( "ok", payload => {
           const {player1, player2} = payload
           if (player1.name === player) this.setState({ form: false, message: {instruction: player1.stage}, payload, id: "player1" })
           if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
           history.push(`/?game=${game}&player=${player}`)
-      })
+      }).receive( "error", ({reason}) => this.setState({ message: {error: reason} }) )
       gameChannel.on( "islands_set", playerData =>
         this.setState({ payload: merge({}, this.state.payload, {[playerData.key]: playerData}), message: {instruction: playerData.stage} }) )
       gameChannel.on( "coordinate_guessed", ({player_key}) => {
         const instruction = (player_key === this.state.id) ? "wait" : "turn"
-        this.setStat+e({ message: {instruction} })
+        this.setState({ message: {instruction} })
       })
       gameChannel.on( "game_status", ({won, winner}) => {
-        if (won) {
-          const instruction = winner ? "won" : "lost"
-          this.setState({ message: {instruction}, payload: null })
-        }
+        if (won) { const instruction = winner ? "won" : "lost"
+                   this.setState({ message: {instruction}, payload: null }) }
       })
+      gameChannel.on( "game_left", ({instruction}) => this.setState({ message: {instruction} }) )
     }
+  }
+  opponent(){
+    const {payload, id} = this.state,
+          opp = (id === "player1") ? "player2" : "player1"
+
+    return payload[opp].name
   }
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.
   componentDidMount(){
