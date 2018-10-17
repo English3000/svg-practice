@@ -25,7 +25,6 @@ export default class Game extends React.Component{
 
   render(){
     const { form, message, payload, id } = this.state
-    console.log("render app", payload);
     return (
       <ErrorBoundary>
         {form ? [
@@ -64,7 +63,9 @@ export default class Game extends React.Component{
             </TouchableOpacity>
 
             {["won", "lost"].includes(message.instruction) ?
-              <TouchableOpacity key="rematch">
+              <TouchableOpacity key="rematch"
+                                style={{paddingLeft: 10}}
+                                onPress={() => this.joinGame({game: `rematch-${payload.game}`, player: payload[id].name})}>
                 <Text>REMATCH</Text>
               </TouchableOpacity> : null}
           </View> : null}
@@ -102,6 +103,10 @@ export default class Game extends React.Component{
           if (player2.name === player) this.setState({ form: false, message: {instruction: player2.stage}, payload, id: "player2" })
           history.push(`/?game=${game}&player=${player}`)
       }).receive( "error", ({reason}) => this.setState({ message: {error: reason} }) )
+      gameChannel.on( "game_joined", ({player1, player2}) => {
+        const {payload, id} = this.state
+        this.setState({ payload: merge({}, payload, {player1: {stage: player1}, player2: {stage: player2}}), message: {instruction: id === "player1" ? player1 : player2} })
+      })
       gameChannel.on( "islands_set", playerData =>
         this.setState({ payload: merge({}, this.state.payload, {[playerData.key]: playerData}), message: {instruction: playerData.stage} }) )
       gameChannel.on( "coordinate_guessed", ({player_key}) => {
@@ -110,7 +115,7 @@ export default class Game extends React.Component{
       })
       gameChannel.on( "game_status", ({won, winner}) => {
         if (won) { const instruction = winner ? "won" : "lost"
-                   this.setState({ message: {instruction}, payload: null }) }
+                   this.setState({ message: {instruction} }) }
       })
       gameChannel.on( "game_left", ({instruction}) => this.setState({ message: {instruction} }) )
     }

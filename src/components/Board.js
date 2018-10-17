@@ -70,7 +70,6 @@ export default class Board extends React.Component{
             <TouchableOpacity style={[custom.tile, {backgroundColor: "darkblue", cursor: "default"}]}/>
           </ErrorBoundary>
       )
-      console.log("render board");
       this.setState({board})
     }
   }
