@@ -55,12 +55,13 @@ export default class Game extends React.Component{
           <View style={[styles.row, {justifyContent: "center"}]}>
             <Instruction message={message} opponent={this.opponent()}/>
 
-            <TouchableOpacity key="exit"
+            {payload ?
+              <TouchableOpacity key="exit"
                               onPress={() => { socket.channels[0].leave()
                                                history.push("/")
                                                this.setState(INITIAL_STATE) }}>
-              <Text>EXIT</Text>
-            </TouchableOpacity>
+                <Text>EXIT</Text>
+              </TouchableOpacity> : null}
 
             {["won", "lost"].includes(message.instruction) ?
               <TouchableOpacity key="rematch"
@@ -124,7 +125,7 @@ export default class Game extends React.Component{
     const {payload, id} = this.state,
           opp = (id === "player1") ? "player2" : "player1"
 
-    return payload[opp].name
+    return payload ? payload[opp].name : null
   }
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.
   componentDidMount(){
