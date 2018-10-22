@@ -58,7 +58,7 @@ export default class Island extends React.Component{
     this.forceUpdate()
   }
 
-  locate(x, y){
+  locate(x, y){ // NOTE: Add mobile locating -- currently islands appear immediately below board && maybe -5px flush of left edge
     const {topLeft, player} = this.props,
 
           marginLeft = (player === "player1") ? -3 : 11,

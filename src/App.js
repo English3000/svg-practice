@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react" // `expo start` => https://blog.expo.io/announcing-expo-dev-tools-beta-c252cbeccb36
 import { StyleSheet, Platform, View, TextInput, Button, TouchableOpacity, Text } from "react-native"
 import ErrorBoundary from "./components/ErrorBoundary.js"
 import Instruction from "./components/Instruction.js"
@@ -12,6 +12,10 @@ import merge from "lodash.merge"
 // Loading == util component like ErrorBoundary
 export const styles = StyleSheet.create({
   row: {flexDirection: "row"}
+})
+
+const custom = StyleSheet.create({
+  input: {width: "50%", paddingLeft: 4, paddingBottom: 4}
 })
 
 const INITIAL_STATE = { form: {game: "", player: "", complete: false},
@@ -31,16 +35,18 @@ export default class Game extends React.Component{
           <View key="inputs" style={[styles.row, Platform.OS !== "web" ? {marginTop: 24} : {}]}>
             <TextInput onChangeText={text => this.handleInput("game", text)}
                        placeholder="game"
-                       style={{width: "50%"}}
+                       style={custom.input}
                        value={form.game}
                        onKeyPress={event => form.complete && event.charCode === 13 ? // onEnter
                                               this.joinGame(form) : null}
+                       underlineColorAndroid="black"
                        autoFocus/>
 
             <TextInput onChangeText={text => this.handleInput("player", text)}
                        placeholder="player"
-                       style={{width: "50%"}}
+                       style={custom.input}
                        value={form.player}
+                       underlineColorAndroid="black"
                        onKeyPress={event => form.complete && event.charCode === 13 ? // onEnter
                                               this.joinGame(form) : null}/>
           </View>,
@@ -53,19 +59,19 @@ export default class Game extends React.Component{
 
         {message ?
           <View style={[styles.row, {justifyContent: "center"}]}>
-            <Instruction message={message} opponent={this.opponent()}/>
+            <Instruction message={message} opponent={this.opponent()} style={Platform.OS !== "web" ? {paddingTop: 6, marginLeft: -3, marginBottom: 30} : {}}/>
 
             {payload ?
-              <TouchableOpacity key="exit"
-                              onPress={() => { socket.channels[0].leave()
-                                               history.push("/")
-                                               this.setState(INITIAL_STATE) }}>
+              <TouchableOpacity key="exit" style={Platform.OS !== "web" ? {paddingTop: 24, marginLeft: -12} : {}}
+                                onPress={() => { socket.channels[0].leave()
+                                                 history.push("/")
+                                                 this.setState(INITIAL_STATE) }}>
                 <Text>EXIT</Text>
               </TouchableOpacity> : null}
 
             {["won", "lost"].includes(message.instruction) ?
               <TouchableOpacity key="rematch"
-                                style={{paddingLeft: 10}}
+                                style={[{paddingLeft: 10}, Platform.OS !== "web" ? {paddingTop: 24, marginLeft: -12} : {}]}
                                 onPress={() => this.joinGame({game: `rematch-${payload.game}`, player: payload[id].name})}>
                 <Text>REMATCH</Text>
               </TouchableOpacity> : null}
@@ -130,6 +136,8 @@ export default class Game extends React.Component{
   // Handles server crashes (browser handles its own): refetches game by rejoining it via query string.
   componentDidMount(){
     const query = history.location.search
-    if (query.length > 1) this.joinGame(queryString.parse(query))
+    if (query.length > 1) {
+      this.joinGame(queryString.parse(query))
+    }
   }
 }

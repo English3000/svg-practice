@@ -49,9 +49,11 @@ export default class Gameplay extends React.Component{
     const opp = (player === "player1") ? "player2" : "player1",
           my = game[player]
 
-    if (Platform.OS !== "web") { // TODO: Show opponent board below
+    if (Platform.OS !== "web") {
       return my.stage === "turn" ?
-               <Board game={game} attacker={player} player={player}/> :
+             [ <Board game={game} attacker={player} player={player} key="opp"/> ,
+               <View style={{paddingBottom: "10%"}} key="padding"></View> ,
+               <Board game={game} attacker={opp}    player={player} key="me"/> ] :
 
              [ <Board game={game} attacker={opp} player={player} key="set-islands"/> ,
                my.stage === "joined" ?
@@ -62,14 +64,14 @@ export default class Gameplay extends React.Component{
           <View key="me" style={styles.row}>
             {my.stage === "joined" ?
               this.renderIslandSet([custom.web, {marginLeft: unit(-2.25)}]) : null}
-            <Board game={game} attacker={opp} player={player}/>
-            <Board game={game} attacker={player} player={player} key="opp"/>
+            <Board game={game} attacker={opp}    player={player}/>
+            <Board game={game} attacker={player} player={player}/>
           </View> : null,
 
         (player === "player2") ?
           <View key="me" style={styles.row}>
-            <Board game={game} attacker={player} player={player} key="opp"/>
-            <Board game={game} attacker={opp} player={player}/>
+            <Board game={game} attacker={player} player={player}/>
+            <Board game={game} attacker={opp}    player={player}/>
             {my.stage === "joined" ?
               this.renderIslandSet([custom.web, {marginLeft: unit(24)}]) : null}
           </View> : null ]
@@ -79,8 +81,8 @@ export default class Gameplay extends React.Component{
   renderIslandSet(style = {}){
     let topLeft = 0
 
-    return <ErrorBoundary>
-             <View key="unset-islands" style={style}>
+    return <ErrorBoundary key="unset-islands">
+             <View style={style}>
                {_.map( _.pairs(this.state), ([type, island]) => {
                  if (type === "onBoard") return null
 

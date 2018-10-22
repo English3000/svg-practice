@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { Platform, StyleSheet, TouchableOpacity, View } from "react-native"
 import { styles } from "../App.js"
 import ErrorBoundary from "./ErrorBoundary.js"
 import Tile from "./Tile.js"
@@ -15,7 +15,7 @@ export default class Board extends React.Component{
     this.state = { board: _.map(_.range(10), row =>
                             _.map( _.range(10), col =>
                               <Tile key={`tile${row},${col}`}
-                                    style={[custom.tile, {cursor}]}
+                                    style={[custom.tile, Platform.OS === "web" ? {cursor} : {}]}
                                     row={row}
                                     col={col}
                                     attacker={props.attacker}
@@ -51,7 +51,7 @@ export default class Board extends React.Component{
           _.each( island.coordinates, coord =>
             board[coord.row][coord.col] =
               <Tile key={`island${coord.row},${coord.col}`}
-                    style={[custom.tile, {cursor: "default"}]}
+                    style={[custom.tile, Platform.OS === "web" ? {cursor: "default"} : {}]}
                     row={coord.row}
                     col={coord.col}
                     attacker={attacker}
@@ -61,13 +61,13 @@ export default class Board extends React.Component{
       _.each( enemy.guesses.hits, coord =>
         board[coord.row][coord.col] =
           <ErrorBoundary key={`hit${coord.row},${coord.col}`}>
-            <TouchableOpacity style={[custom.tile, {backgroundColor: "green", cursor: "default"}]}/>
+            <TouchableOpacity style={[custom.tile, {backgroundColor: "green"}, Platform.OS === "web" ? {cursor: "default"} : {}]}/>
           </ErrorBoundary>
       )
       _.each( enemy.guesses.misses, coord =>
         board[coord.row][coord.col] =
           <ErrorBoundary key={`miss${coord.row},${coord.col}`}>
-            <TouchableOpacity style={[custom.tile, {backgroundColor: "darkblue", cursor: "default"}]}/>
+            <TouchableOpacity style={[custom.tile, {backgroundColor: "darkblue"}, Platform.OS === "web" ? {cursor: "default"} : {}]}/>
           </ErrorBoundary>
       )
       this.setState({board})

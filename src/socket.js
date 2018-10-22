@@ -1,9 +1,17 @@
-import {Socket} from "phoenix"
+import { Socket } from "phoenix"
 import createHistory from "history/createMemoryHistory"
+import { Platform } from "react-native"
 
-export const history = createHistory() //onBack => exit_game(channel)
-// in package.json, can add "proxy": "http://localhost:4000/",
-let socket = new Socket("ws://localhost:4000/socket", {})
+export const history = createHistory() // onBack, onRefresh => channel.leave()
+
+let host
+if (process.env.NODE_ENV === "development") {
+  host = (Platform.OS === "web") ? "localhost:4000" : "192.168.43.62:4000" // wifi IP
+} else {
+  // host = GIGALIXIR_URL
+}
+
+let socket = new Socket(`ws://${host}/socket`, {})
 socket.connect()
 export default socket
 
