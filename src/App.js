@@ -141,3 +141,5 @@ export default class Game extends React.Component{
     }
   }
 }
+
+// pre-CSR, git revert 3bda5318d1d7c7a7db3ac2bb33161435633546b5
