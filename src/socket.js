@@ -8,7 +8,7 @@ let host
 if (process.env.NODE_ENV === "development") {
   host = (Platform.OS === "web") ? "localhost:4000" : "192.168.43.62:4000" // wifi IP
 } else {
-  // host = GIGALIXIR_URL
+  host = "play-islands.gigalixirapp.com"
 }
 
 let socket = new Socket(`ws://${host}/socket`, {})
