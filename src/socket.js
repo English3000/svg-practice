@@ -4,14 +4,14 @@ import { Platform } from "react-native"
 
 export const history = createHistory() // onBack, onRefresh => channel.leave()
 
-let host
+let server
 if (process.env.NODE_ENV === "development") {
-  host = (Platform.OS === "web") ? "localhost:4000" : "192.168.43.62:4000" // wifi IP
+  server = (Platform.OS === "web") ? "localhost:4000" : "192.168.43.62:4000" // wifi IP
 } else {
-  host = "play-islands.gigalixirapp.com"
+  server = "islands.gigalixirapp.com"
 }
 
-let socket = new Socket(`ws://${host}/socket`, {})
+let socket = new Socket(`ws://${server}/socket`, {})
 socket.connect()
 export default socket
 
